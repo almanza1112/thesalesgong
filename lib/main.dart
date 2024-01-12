@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thesalesgong/home_page.dart';
 import 'package:thesalesgong/login/admin_signup/add_team_members_page.dart';
 import 'package:thesalesgong/login/admin_signup/admin_payment_page.dart';
 import 'package:thesalesgong/login/admin_signup/admin_signup_page.dart';
@@ -6,6 +7,9 @@ import 'package:thesalesgong/login/login_page.dart';
 import 'package:thesalesgong/login/opening_page.dart';
 import 'package:thesalesgong/login/signup_page.dart';
 import 'package:thesalesgong/login/team_member_signup_page.dart';
+import 'package:thesalesgong/menu/notifications_settings_page.dart';
+import 'package:thesalesgong/menu/team_settings_page.dart';
+import 'package:thesalesgong/notifications_page.dart';
 
 
 void main() async {
@@ -27,6 +31,10 @@ class MyApp extends StatelessWidget {
         '/team_member_signup': (context) => const TeamMemberSignupPage(),
         '/add_team_members': (context) => const AddTeamMembersPage(),
         '/admin_payment': (context) => const AdminPaymentPage(),
+        '/home': (context) => const HomePage(),
+        '/notifications': (context) => const NotificationsPage(),
+        '/team': (context) => const TeamPage(),
+        '/notifications_settings': (context) => const NotificationSettingsPage(),
       },
     );
   }

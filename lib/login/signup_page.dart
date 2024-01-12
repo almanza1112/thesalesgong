@@ -16,7 +16,7 @@ class SignupPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextButton(
               style: TextButton.styleFrom(
                   padding: const EdgeInsets.all(16),
@@ -33,7 +33,7 @@ class SignupPage extends StatelessWidget {
             height: 10,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextButton(
               style: TextButton.styleFrom(
                   padding: const EdgeInsets.all(16),

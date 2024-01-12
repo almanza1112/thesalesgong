@@ -19,6 +19,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Payment'),
         backgroundColor: Colors.white10,
@@ -27,7 +28,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Form(
             key: _formKey,
             child: Column(

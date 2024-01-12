@@ -144,9 +144,10 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       // Perform sign-up logic here
+                      Navigator.pushNamed(context, '/home');
                     }
                   },
-                  child: const Text('Sign Up'),
+                  child: const Text('SIGN UP'),
                 ),
                 const SizedBox(height: 8),
               ],
