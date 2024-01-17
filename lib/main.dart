@@ -10,10 +10,16 @@ import 'package:thesalesgong/login/team_member_signup_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
 import 'package:thesalesgong/menu/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 
 void main() async {
-  
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 

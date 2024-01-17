@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "941863865788",
+    "project_id": "the-sales-gong",
+    "storage_bucket": "the-sales-gong.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941863865788:android:cd9dc9152912f42b9c6fb9",
+        "android_client_info": {
+          "package_name": "com.example.thesalesgong"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRwcPIx07gH490m5sMhPpvr0Qmp74_vvU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
