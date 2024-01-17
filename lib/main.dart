@@ -21,7 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'The Sales Gong',
+      theme: ThemeData(
+        useMaterial3: true
+      ),
       home: const OpeningPage(),
       routes: {
         '/opening': (context) => const OpeningPage(),

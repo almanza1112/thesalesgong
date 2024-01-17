@@ -73,20 +73,11 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
       padding: EdgeInsets.zero,
       children: [
-        const UserAccountsDrawerHeader(
-          accountName: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('John Doe'),
-              Text(
-                'ADMIN',
-                style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-              ),
-              Text("Team Name")
-            ],
-          ),
+         UserAccountsDrawerHeader(
+          accountName: Text('John Doe'),
           accountEmail: Text('john.doe@example.com'),
-         
+         currentAccountPicture: CircleAvatar(child: Image.asset('name')),
+         currentAccountPictureSize: const Size.square(80),
           decoration: BoxDecoration(
             color: Colors.blue,
           ),
