@@ -1,160 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AdminPaymentPage extends StatefulWidget {
   const AdminPaymentPage({Key? key}) : super(key: key);
+
   @override
   State<AdminPaymentPage> createState() => _AdminPaymentPageState();
 }
 
 class _AdminPaymentPageState extends State<AdminPaymentPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _cardNumberController = TextEditingController();
-  final TextEditingController _cvvController = TextEditingController();
-  final TextEditingController _expController = TextEditingController();
-
   final double formPadding = 24;
 
   @override
   Widget build(BuildContext context) {
+    late List<String> receivedEmailAddresses;
+
+    final List<String> args =
+        ModalRoute.of(context)!.settings.arguments as List<String>;
+    receivedEmailAddresses = args;
+
+    double totalPrice = receivedEmailAddresses.length * 9.99;
+    DateTime purchaseDate = DateTime.now();
+    DateTime expirationDate = purchaseDate.add(const Duration(days: 365));
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Payment'),
         backgroundColor: Colors.white10,
         foregroundColor: Colors.grey[600],
-        shadowColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                      labelText: 'Name on Card',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.person,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter the name on card';
-                    }
-                    return null;
-                  },
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+             
+
+              _buildBreakdownItem(
+                  'Team Members', receivedEmailAddresses.length),
+              _buildBreakdownItem('Price per Email', 9.99),
+              _buildBreakdownItem('Subscription Duration', '1 Year'),
+              _buildBreakdownItem('Expiration Date',
+                  DateFormat('MM/dd/yyyy').format(expirationDate)),
+
+                   
+Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+         const Text(
+            "Total Price",
+            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700),
+          ),
+          Text(
+            '\$${totalPrice.toStringAsFixed(2)}',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),
+          ),
+        ],
+      ),
+    ),
+              const Spacer(),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.all(16),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white, // Modern color
+                  shape: const StadiumBorder(),
                 ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                      labelText: 'Card Billing Address',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.pin_drop,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter the card billing address';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _cardNumberController,
-                  decoration: InputDecoration(
-                      labelText: 'Card Number',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.credit_card,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter the card number';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextFormField(
-                        controller: _cvvController,
-                        decoration: InputDecoration(
-                            labelText: 'CVV',
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            prefixIcon: const Icon(
-                              Icons.numbers,
-                              color: Colors.grey,
-                            ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter the CVV';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        controller: _expController,
-                        decoration: InputDecoration(
-                            labelText: 'Exp.',
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            prefixIcon: const Icon(
-                              Icons.date_range,
-                              color: Colors.grey,
-                            ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter the expiration date';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: const StadiumBorder()),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/home');
-                  },
-                  child: const Text("COMPLETE"),
-                ),
-              ],
-            ),
+                onPressed: () {
+                  // Handle checkout logic here
+                  Navigator.pushNamed(context, '/home');
+                },
+                child: const Text("COMPLETE"),
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBreakdownItem(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey[600]),
+          ),
+          Text(
+            '$value',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+          ),
+        ],
       ),
     );
   }

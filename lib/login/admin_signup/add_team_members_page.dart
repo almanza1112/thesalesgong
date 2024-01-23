@@ -28,9 +28,7 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
           ),],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/admin_payment', arguments: _emailAddresses);
-        },
+        onPressed: validateEmailAddressList,
         child: const Icon(Icons.arrow_forward),
       ),
       body: AnimatedList(
@@ -128,5 +126,17 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
         ),
       ),
     );
+  }
+
+  void validateEmailAddressList() {
+    if (_emailAddresses.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please add at least one email address'),
+        ),
+      );
+    } else {
+      Navigator.pushNamed(context, '/admin_payment', arguments: _emailAddresses);
+    }
   }
 }
