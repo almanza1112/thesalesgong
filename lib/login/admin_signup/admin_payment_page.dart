@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -110,12 +111,18 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   }
 
   void completePurchase() async {
+    final firebaseMessage = FirebaseMessaging.instance;
+    await firebaseMessage.requestPermission();
+    final fcmToken = await firebaseMessage.getToken();
+
     var body = {
+      "email": FirebaseAuth.instance.currentUser!.email,
       "uid": FirebaseAuth.instance.currentUser!.uid,
       "team_members": receivedEmailAddresses.toString(),
+      "fcm_token": fcmToken,
     };
     http.Response response = await http.post(
-        Uri.parse("${globals.END_POINT}/sign_up/admin/team_members"),
+        Uri.parse("${globals.END_POINT}/sign_up/admin/complete_purchase"),
         body: body);
 
     if (response.statusCode == 201 && context.mounted) {
