@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
@@ -196,11 +197,15 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
       _teamIDErrorText = null;
     });
     if (_formKey.currentState!.validate()) {
+      final firebaseMessage = FirebaseMessaging.instance;
+      await firebaseMessage.requestPermission();
+      final fcmToken = await firebaseMessage.getToken();
       var body = {
         "name": _nameController.text,
         "email": _emailController.text,
         "password": _passwordController.text,
         "team_ID": _teamIdController.text,
+        "fcm_token": fcmToken,
       };
 
       http.Response response = await http.post(
