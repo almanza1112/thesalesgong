@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:thesalesgong/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -60,12 +64,23 @@ class _HomePageState extends State<HomePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
-                onPressed: () {},
+                onPressed: hitTheSalesGong,
                 child: const Text('HIT THE SALES GONG!'),
               ),
             ],
           ),
         ));
+  }
+
+  void hitTheSalesGong() async {
+    print("im hitting the sales gong");
+    var body ={
+      "message": _messageController.text,
+      "user": FirebaseAuth.instance.currentUser!.uid,
+    };
+
+    http.Response response = await http
+        .post(Uri.parse("${globals.END_POINT}/gong/hit"), body: body);
   }
 
   Widget menu() {
@@ -74,11 +89,9 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.zero,
       children: [
          UserAccountsDrawerHeader(
-          accountName: Text('John Doe'),
-          accountEmail: Text('john.doe@example.com'),
-         currentAccountPicture: CircleAvatar(child: Image.asset('name')),
-         currentAccountPictureSize: const Size.square(80),
-          decoration: BoxDecoration(
+          accountName: Text(FirebaseAuth.instance.currentUser!.displayName!),
+          accountEmail: Text(FirebaseAuth.instance.currentUser!.email!),
+          decoration: const BoxDecoration(
             color: Colors.blue,
           ),
         ),
