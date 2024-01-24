@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
@@ -21,8 +22,8 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
   final double formPadding = 24;
   String? _emailErrorText = null;
 
-  bool isPasswordVisible = false;
-  bool isConfirmPasswordVisible = false;
+  bool isPasswordObscure = true;
+  bool isConfirmPasswordObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
         title: const Text('Admin Signup'),
         backgroundColor: Colors.white10,
         foregroundColor: Colors.grey[600],
-        shadowColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Form(
@@ -84,7 +85,7 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                 SizedBox(height: formPadding),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: isPasswordVisible,
+                  obscureText: isPasswordObscure,
                   decoration: InputDecoration(
                       labelText: 'Password',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -95,10 +96,10 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
-                            isPasswordVisible = !isPasswordVisible;
+                            isPasswordObscure = !isPasswordObscure;
                           });
                         },
-                        icon: Icon(isPasswordVisible
+                        icon: Icon(isPasswordObscure
                             ? Icons.visibility
                             : Icons.visibility_off),
                         color: Colors.grey,
@@ -115,7 +116,7 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                 SizedBox(height: formPadding),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  obscureText: isConfirmPasswordVisible,
+                  obscureText: isConfirmPasswordObscure,
                   decoration: InputDecoration(
                       labelText: 'Confrim Password',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -126,11 +127,11 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
-                            isConfirmPasswordVisible =
-                                !isConfirmPasswordVisible;
+                            isConfirmPasswordObscure =
+                                !isConfirmPasswordObscure;
                           });
                         },
-                        icon: Icon(isConfirmPasswordVisible
+                        icon: Icon(isConfirmPasswordObscure
                             ? Icons.visibility
                             : Icons.visibility_off),
                         color: Colors.grey,
@@ -183,8 +184,21 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
         // Successully created new user
         Map<String, dynamic> data = jsonDecode(response.body);
         if (data['result'] == 'success' && context.mounted) {
-          // Navigate to add team members page
-          Navigator.pushNamed(context, '/add_team_members');
+          // Sign into Firebase and then navigate to add team members page
+          try {
+            FirebaseAuth.instance
+                .signInWithEmailAndPassword(
+                    email: _emailController.text.trim(),
+                    password: _passwordController.text)
+                .then((value) =>
+                    Navigator.pushNamed(context, '/add_team_members'));
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'user-not-found') {
+              print('No user found for that email.');
+            } else if (e.code == 'wrong-password') {
+              print('Wrong password provided for that user.');
+            }
+          }
         }
       } else if (response.statusCode == 409) {
         // errorInfo.code : "auth/email-already-exists" <-- this is from server

@@ -25,7 +25,8 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
           IconButton(
             onPressed: _showAddDialog,
             icon: const Icon(Icons.add),
-          ),],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: validateEmailAddressList,
@@ -106,7 +107,9 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: const Row(
             children: [
-              Icon(Icons.delete, color: Colors.white), Spacer(), Icon(Icons.delete, color: Colors.white)
+              Icon(Icons.delete, color: Colors.white),
+              Spacer(),
+              Icon(Icons.delete, color: Colors.white)
             ],
           ),
         ),
@@ -116,7 +119,8 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
               title: Text(emailAddress),
               trailing: IconButton(
                 onPressed: () {
-                  _removeEmailAddress(_emailAddresses.indexOf(emailAddress), false);
+                  _removeEmailAddress(
+                      _emailAddresses.indexOf(emailAddress), false);
                 },
                 icon: Icon(
                   Icons.delete,
@@ -136,7 +140,8 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
         ),
       );
     } else {
-      Navigator.pushNamed(context, '/admin_payment', arguments: _emailAddresses);
+      Navigator.pushNamed(context, '/admin_payment',
+          arguments: _emailAddresses);
     }
   }
 }

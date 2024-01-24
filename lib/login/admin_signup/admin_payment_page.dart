@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:thesalesgong/globals.dart' as globals;
 
 class AdminPaymentPage extends StatefulWidget {
   const AdminPaymentPage({Key? key}) : super(key: key);
@@ -10,11 +14,10 @@ class AdminPaymentPage extends StatefulWidget {
 
 class _AdminPaymentPageState extends State<AdminPaymentPage> {
   final double formPadding = 24;
+  late List<String> receivedEmailAddresses;
 
   @override
   Widget build(BuildContext context) {
-    late List<String> receivedEmailAddresses;
-
     final List<String> args =
         ModalRoute.of(context)!.settings.arguments as List<String>;
     receivedEmailAddresses = args;
@@ -37,32 +40,34 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-             
-
               _buildBreakdownItem(
                   'Team Members', receivedEmailAddresses.length),
               _buildBreakdownItem('Price per Email', 9.99),
               _buildBreakdownItem('Subscription Duration', '1 Year'),
               _buildBreakdownItem('Expiration Date',
                   DateFormat('MM/dd/yyyy').format(expirationDate)),
-
-                   
-Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-         const Text(
-            "Total Price",
-            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700),
-          ),
-          Text(
-            '\$${totalPrice.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),
-          ),
-        ],
-      ),
-    ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Total Price",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      '\$${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
               const Spacer(),
               TextButton(
                 style: TextButton.styleFrom(
@@ -71,10 +76,7 @@ Padding(
                   foregroundColor: Colors.white, // Modern color
                   shape: const StadiumBorder(),
                 ),
-                onPressed: () {
-                  // Handle checkout logic here
-                  Navigator.pushNamed(context, '/home');
-                },
+                onPressed: completePurchase,
                 child: const Text("COMPLETE"),
               ),
             ],
@@ -92,14 +94,32 @@ Padding(
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey[600]),
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey[600]),
           ),
           Text(
             '$value',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
           ),
         ],
       ),
     );
+  }
+
+  void completePurchase() async {
+    var body = {
+      "uid": FirebaseAuth.instance.currentUser!.uid,
+      "team_members": receivedEmailAddresses.toString(),
+    };
+    http.Response response = await http.post(
+        Uri.parse("${globals.END_POINT}/sign_up/admin/team_members"),
+        body: body);
+
+    if (response.statusCode == 201 && context.mounted) {
+      Navigator.pushNamed(context, '/home');
+    }
   }
 }
