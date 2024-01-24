@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:thesalesgong/globals.dart' as globals;
 
 class TeamMemberSignupPage extends StatefulWidget {
   const TeamMemberSignupPage({Key? key}) : super(key: key);
@@ -16,10 +21,16 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
   final TextEditingController _teamIdController = TextEditingController();
   final double formPadding = 24;
 
+  bool isPasswordObscure = true;
+  bool isConfirmPasswordObscure = true;
+
+  String? _teamIDErrorText;
+  String? _emailErrorText;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false, //TODO: Look into this
       appBar: AppBar(
         title: const Text('Team Member Signup'),
         backgroundColor: Colors.white10,
@@ -58,6 +69,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                       labelText: 'Email',
+                      errorText: _emailErrorText,
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: const Icon(
                         Icons.email,
@@ -75,6 +87,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                 SizedBox(height: formPadding),
                 TextFormField(
                   controller: _passwordController,
+                  obscureText: isPasswordObscure,
                   decoration: InputDecoration(
                       labelText: 'Password',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -82,9 +95,19 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                         Icons.lock,
                         color: Colors.grey,
                       ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isPasswordObscure = !isPasswordObscure;
+                          });
+                        },
+                        icon: Icon(isPasswordObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        color: Colors.grey,
+                      ),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(40))),
-                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a password';
@@ -95,11 +118,24 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                 SizedBox(height: formPadding),
                 TextFormField(
                   controller: _confirmPasswordController,
+                  obscureText: isConfirmPasswordObscure,
                   decoration: InputDecoration(
                       labelText: 'Confrim Password',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: const Icon(
                         Icons.lock,
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isConfirmPasswordObscure =
+                                !isConfirmPasswordObscure;
+                          });
+                        },
+                        icon: Icon(isConfirmPasswordObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         color: Colors.grey,
                       ),
                       border: OutlineInputBorder(
@@ -120,6 +156,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                   decoration: InputDecoration(
                       labelText: 'Team ID',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
+                      errorText: _teamIDErrorText,
                       prefixIcon: const Icon(
                         Icons.group,
                         color: Colors.grey,
@@ -141,12 +178,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.blue),
                       shape: const StadiumBorder()),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Perform sign-up logic here
-                      Navigator.pushNamed(context, '/home');
-                    }
-                  },
+                  onPressed: createAccount,
                   child: const Text('SIGN UP'),
                 ),
                 const SizedBox(height: 8),
@@ -156,5 +188,74 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
         ),
       ),
     );
+  }
+
+  void createAccount() async {
+    setState(() {
+      _emailErrorText = null;
+      _teamIDErrorText = null;
+    });
+    if (_formKey.currentState!.validate()) {
+      var body = {
+        "name": _nameController.text,
+        "email": _emailController.text,
+        "password": _passwordController.text,
+        "team_ID": _teamIdController.text,
+      };
+
+      http.Response response = await http.post(
+          Uri.parse("${globals.END_POINT}/sign_up/team_member"),
+          body: body);
+
+      if (response.statusCode == 201 && context.mounted) {
+        // Success
+        // Sign into Firebase
+        try {
+          FirebaseAuth.instance
+              .signInWithEmailAndPassword(
+                  email: _emailController.text.trim(),
+                  password: _passwordController.text)
+              .then((value) => Navigator.pushNamed(context, '/home'));
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'user-not-found') {
+            print('No user found for that email.');
+          } else if (e.code == 'wrong-password') {
+            print('Wrong password provided for that user.');
+          }
+        }
+      } else if (response.statusCode == 409 && context.mounted) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['part'] == 'creating user') {
+           setState(() {
+            _emailErrorText = 'Email already in use for another account';
+          });
+        } else if (data['part'] == 'finding team') {
+          setState(() {
+            _emailErrorText = 'Email does not belong to team';
+          });
+        }
+        
+      } else if (response.statusCode == 500 && context.mounted) {
+        // Error 500 = team id not found || user already has account
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['part'] == 'creating user') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error creating new user, please try again later'),
+            ),
+          );
+        } else if (data['part'] == 'finding team') {
+          setState(() {
+            _teamIDErrorText = 'Team ID not found';
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Server error, please try again later'),
+            ),
+          );
+        }
+      }
+    }
   }
 }
