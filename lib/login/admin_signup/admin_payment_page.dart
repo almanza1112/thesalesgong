@@ -45,7 +45,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                   'Team Members', receivedEmailAddresses.length),
               _buildBreakdownItem('Price per Email', 9.99),
               _buildBreakdownItem('Subscription Duration', '1 Year'),
-              _buildBreakdownItem('Expiration Date',
+              _buildBreakdownItem('Renewal Date',
                   DateFormat('MM/dd/yyyy').format(expirationDate)),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
