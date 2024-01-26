@@ -21,7 +21,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  in_app_purchase: ^3.1.13
 
 dev_dependencies:
   flutter_test:
