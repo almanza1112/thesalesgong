@@ -73,10 +73,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void hitTheSalesGong() async {
-    print("im hitting the sales gong");
     var body ={
       "message": _messageController.text,
       "user": FirebaseAuth.instance.currentUser!.uid,
+      "name": FirebaseAuth.instance.currentUser!.displayName!,
+      "timestamp": FirebaseAuth.instance.currentUser!.metadata.creationTime?.millisecondsSinceEpoch.toString(),
+      "teamID": "M1DQ8Q"
     };
 
     http.Response response = await http

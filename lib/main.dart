@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thesalesgong/auth_service.dart';
 import 'package:thesalesgong/home_page.dart';
 import 'package:thesalesgong/login/admin_signup/add_team_members_page.dart';
 import 'package:thesalesgong/login/admin_signup/admin_payment_page.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true
       ),
-      home: const OpeningPage(),
+      home: AuthService().handleAuthStateNew(),
       routes: {
         '/opening': (context) => const OpeningPage(),
         '/login': (context) => const LoginPage(),
