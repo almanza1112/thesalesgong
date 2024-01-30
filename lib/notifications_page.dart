@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({Key? key}) : super(key: key);
@@ -9,9 +10,21 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   final firestore = FirebaseFirestore.instance;
+  final storage = FlutterSecureStorage();
+  String teamId = '';
 
   Future<void> _refreshNotifications() async {
     // Add your logic to fetch data from Firestore here
+  }
+
+  @override
+  void initState() {
+    storage.read(key: 'teamId').then((value) {
+      setState(() {
+        teamId = value!;
+      });
+    });
+    super.initState();
   }
 
   @override
@@ -26,9 +39,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: RefreshIndicator(
         onRefresh: _refreshNotifications,
         child: FutureBuilder<DocumentSnapshot>(
-          future: firestore.collection("teams").doc("M1DQ8Q").get(),
+          future: teamId.isNotEmpty
+              ? firestore.collection("teams").doc(teamId).get()
+              : null,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (teamId.isEmpty) {
+              return const Center(child: Text('Team ID is not available yet.'));
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));

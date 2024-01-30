@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
@@ -73,16 +74,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   void hitTheSalesGong() async {
-    var body ={
+    final storage = FlutterSecureStorage();
+    String teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
+    var body = {
       "message": _messageController.text,
       "user": FirebaseAuth.instance.currentUser!.uid,
       "name": FirebaseAuth.instance.currentUser!.displayName!,
-      "timestamp": FirebaseAuth.instance.currentUser!.metadata.creationTime?.millisecondsSinceEpoch.toString(),
-      "teamID": "M1DQ8Q"
+      "timestamp": FirebaseAuth
+          .instance.currentUser!.metadata.creationTime?.millisecondsSinceEpoch
+          .toString(),
+      "team_ID": teamID
     };
 
-    http.Response response = await http
-        .post(Uri.parse("${globals.END_POINT}/gong/hit"), body: body);
+    http.Response response =
+        await http.post(Uri.parse("${globals.END_POINT}/gong/hit"), body: body);
+
+        if(response.statusCode == 200){
+        }
   }
 
   Widget menu() {
@@ -90,7 +98,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
       padding: EdgeInsets.zero,
       children: [
-         UserAccountsDrawerHeader(
+        UserAccountsDrawerHeader(
           accountName: Text(FirebaseAuth.instance.currentUser!.displayName!),
           accountEmail: Text(FirebaseAuth.instance.currentUser!.email!),
           decoration: const BoxDecoration(
@@ -123,11 +131,37 @@ class _HomePageState extends State<HomePage> {
         ),
         ListTile(
           title: const Text('Logout'),
-          onTap: () {
-            Navigator.pop(context);
-          },
+          onTap: logout,
         ),
       ],
     ));
+  }
+
+  void logout() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('CANCEL'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if(context.mounted){
+                    Navigator.pushNamed(context, '/opening');
+                  }
+                },
+                child: const Text('LOGOUT'),
+              ),
+            ],
+          );
+        });
   }
 }

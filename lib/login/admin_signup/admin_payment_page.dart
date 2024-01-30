@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
@@ -111,22 +115,26 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   }
 
   void completePurchase() async {
-    final firebaseMessage = FirebaseMessaging.instance;
-    await firebaseMessage.requestPermission();
-    final fcmToken = await firebaseMessage.getToken();
+  final firebaseMessage = FirebaseMessaging.instance;
+  await firebaseMessage.requestPermission();
+  final fcmToken = await firebaseMessage.getToken();
 
-    var body = {
-      "email": FirebaseAuth.instance.currentUser!.email,
-      "uid": FirebaseAuth.instance.currentUser!.uid,
-      "team_members": receivedEmailAddresses.toString(),
-      "fcm_token": fcmToken,
-    };
-    http.Response response = await http.post(
-        Uri.parse("${globals.END_POINT}/sign_up/admin/complete_purchase"),
-        body: body);
+  var body = {
+    "email": FirebaseAuth.instance.currentUser!.email,
+    "uid": FirebaseAuth.instance.currentUser!.uid,
+    "team_members": receivedEmailAddresses.toString(),
+    "fcm_token": fcmToken,
+  };
+  http.Response response = await http.post(
+      Uri.parse("${globals.END_POINT}/sign_up/admin/complete_purchase"),
+      body: body);
 
-    if (response.statusCode == 201 && context.mounted) {
-      Navigator.pushNamed(context, '/home');
-    }
+  if (response.statusCode == 201 && context.mounted) {
+    Map<String, dynamic> data = jsonDecode(response.body);
+    final storage = FlutterSecureStorage();
+    await storage.write(key: globals.FSS_TEAM_ID, value: data['team_ID']);
+
+    Navigator.pushNamed(context, '/home');
   }
+}
 }
