@@ -80,9 +80,7 @@ class _HomePageState extends State<HomePage> {
       "message": _messageController.text,
       "user": FirebaseAuth.instance.currentUser!.uid,
       "name": FirebaseAuth.instance.currentUser!.displayName!,
-      "timestamp": FirebaseAuth
-          .instance.currentUser!.metadata.creationTime?.millisecondsSinceEpoch
-          .toString(),
+      "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
       "team_ID": teamID
     };
 
