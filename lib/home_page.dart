@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _messageController = TextEditingController();
+  final storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void hitTheSalesGong() async {
-    final storage = FlutterSecureStorage();
     String teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
     var body = {
       "message": _messageController.text,
@@ -87,8 +87,7 @@ class _HomePageState extends State<HomePage> {
     http.Response response =
         await http.post(Uri.parse("${globals.END_POINT}/gong/hit"), body: body);
 
-        if(response.statusCode == 200){
-        }
+    if (response.statusCode == 200) {}
   }
 
   Widget menu() {
@@ -105,8 +104,11 @@ class _HomePageState extends State<HomePage> {
         ),
         ListTile(
           title: const Text('Team'),
-          onTap: () {
-            Navigator.pushNamed(context, '/team');
+          onTap: () async {
+            String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
+            if(context.mounted){
+              Navigator.pushNamed(context, '/team', arguments: teamID);
+            }
           },
         ),
         ListTile(
@@ -152,7 +154,8 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
-                  if(context.mounted){
+                  await const FlutterSecureStorage().deleteAll();
+                  if (context.mounted) {
                     Navigator.pushNamed(context, '/opening');
                   }
                 },

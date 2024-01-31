@@ -120,6 +120,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   final fcmToken = await firebaseMessage.getToken();
 
   var body = {
+    "name": FirebaseAuth.instance.currentUser!.displayName,
     "email": FirebaseAuth.instance.currentUser!.email,
     "uid": FirebaseAuth.instance.currentUser!.uid,
     "team_members": receivedEmailAddresses.toString(),

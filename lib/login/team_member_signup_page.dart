@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 
@@ -220,7 +221,14 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
               .signInWithEmailAndPassword(
                   email: _emailController.text.trim(),
                   password: _passwordController.text)
-              .then((value) => Navigator.pushNamed(context, '/home'));
+              .then((value) async {
+            final storage = FlutterSecureStorage();
+            await storage.write(
+                key: globals.FSS_TEAM_ID, value: _teamIdController.text);
+            if (context.mounted) {
+              Navigator.pushNamed(context, '/home');
+            }
+          });
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
             print('No user found for that email.');
@@ -231,7 +239,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
       } else if (response.statusCode == 409 && context.mounted) {
         Map<String, dynamic> data = jsonDecode(response.body);
         if (data['part'] == 'creating user') {
-           setState(() {
+          setState(() {
             _emailErrorText = 'Email already in use for another account';
           });
         } else if (data['part'] == 'finding team') {
@@ -239,7 +247,6 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
             _emailErrorText = 'Email does not belong to team';
           });
         }
-        
       } else if (response.statusCode == 500 && context.mounted) {
         // Error 500 = team id not found || user already has account
         Map<String, dynamic> data = jsonDecode(response.body);
