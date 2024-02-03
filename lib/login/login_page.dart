@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:thesalesgong/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -11,9 +14,9 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-    bool isPasswordObscure = true;
+  bool isPasswordObscure = true;
 
-   String? _emailErrorText;
+  String? _emailErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +30,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-                            const Spacer(),
-
+              const Spacer(),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -97,14 +99,34 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-   void login() {
+  void login() {
     final String email = _emailController.text;
     final String password = _passwordController.text;
 
     FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password)
-        .then((value) {
-      Navigator.of(context).pushReplacementNamed('/home');
+        .then((value) async {
+          // Need to retrieve the team_id from firestore
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(value.user!.uid)
+              .get()
+              .then((DocumentSnapshot documentSnapshot) {
+            if (documentSnapshot.exists) {
+              // User document exists, save team_ID to FlutterSecureStorage
+              final storage = FlutterSecureStorage();
+              storage.write(
+                  key: globals.FSS_TEAM_ID,
+                  value: documentSnapshot.get('team_ID'));
+              Navigator.of(context).pushReplacementNamed('/home');
+            } else {
+              setState(() {
+                // TODO: Change this to a more user-friendly message
+                _emailErrorText = 'User does not exist';
+              });
+            }
+          });
+      
     }).catchError((error) {
       setState(() {
         _emailErrorText = error.message;
