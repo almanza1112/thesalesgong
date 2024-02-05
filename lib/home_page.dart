@@ -120,13 +120,13 @@ class _HomePageState extends State<HomePage> {
         ListTile(
           title: const Text('Email'),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pushNamed(context, '/email');
           },
         ),
         ListTile(
           title: const Text('Password'),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pushNamed(context, '/password');
           },
         ),
         ListTile(

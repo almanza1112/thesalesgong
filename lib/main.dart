@@ -8,7 +8,9 @@ import 'package:thesalesgong/login/login_page.dart';
 import 'package:thesalesgong/login/opening_page.dart';
 import 'package:thesalesgong/login/signup_page.dart';
 import 'package:thesalesgong/login/team_member_signup_page.dart';
+import 'package:thesalesgong/menu/email_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
+import 'package:thesalesgong/menu/password_page.dart';
 import 'package:thesalesgong/menu/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,6 +48,8 @@ class MyApp extends StatelessWidget {
         '/notifications': (context) => const NotificationsPage(),
         '/team': (context) => const TeamPage(),
         '/notifications_settings': (context) => const NotificationSettingsPage(),
+        '/email': (context) => const EmailPage(),
+        '/password': (context) => const PasswordPage(),
       },
     );
   }
