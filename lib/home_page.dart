@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
               return AlertDialog(
                 title: const Text('Welcome to The Sales Gong'),
                 content: const Text(
-                    'When you close a deal you are proud of, simply enter a message in the message box and HIT THE SALES GONG. Your team members will receive an alert and you can celebrate together, no maeer where you are.\n\nGo get’em!'),
+                    'When you close a deal you are proud of, simply enter a message in the message box and HIT THE SALES GONG. Your team members will receive an alert and you can celebrate together, no matter where you are.\n\nGo get’em!'),
                 actions: [
                   TextButton(
                     onPressed: () async {

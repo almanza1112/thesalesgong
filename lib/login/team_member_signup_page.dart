@@ -29,165 +29,178 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
   String? _teamIDErrorText;
   String? _emailErrorText;
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, //TODO: Look into this
+      resizeToAvoidBottomInset: true, //TODO: Look into this
       appBar: AppBar(
         title: const Text('Team Member Signup'),
         backgroundColor: Colors.white10,
         foregroundColor: Colors.grey[600],
         shadowColor: Colors.transparent,
       ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                      labelText: 'Name',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.person,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                      labelText: 'Email',
-                      errorText: _emailErrorText,
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.email,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: isPasswordObscure,
-                  decoration: InputDecoration(
-                      labelText: 'Password',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.lock,
-                        color: Colors.grey,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isPasswordObscure = !isPasswordObscure;
-                          });
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: SafeArea(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _nameController,
+                        textCapitalization: TextCapitalization.words,
+                        decoration: InputDecoration(
+                            labelText: 'Name',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
                         },
-                        icon: Icon(isPasswordObscure
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        color: Colors.grey,
                       ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: isConfirmPasswordObscure,
-                  decoration: InputDecoration(
-                      labelText: 'Confrim Password',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.lock,
-                        color: Colors.grey,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isConfirmPasswordObscure =
-                                !isConfirmPasswordObscure;
-                          });
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                            labelText: 'Email',
+                            errorText: _emailErrorText,
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.email,
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
                         },
-                        icon: Icon(isConfirmPasswordObscure
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        color: Colors.grey,
                       ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _teamIdController,
-                  decoration: InputDecoration(
-                      labelText: 'Team ID',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      errorText: _teamIDErrorText,
-                      prefixIcon: const Icon(
-                        Icons.group,
-                        color: Colors.grey,
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: isPasswordObscure,
+                        decoration: InputDecoration(
+                            labelText: 'Password',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: Colors.grey,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isPasswordObscure = !isPasswordObscure;
+                                });
+                              },
+                              icon: Icon(isPasswordObscure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          return null;
+                        },
                       ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your team ID';
-                    }
-                    return null;
-                  },
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: isConfirmPasswordObscure,
+                        decoration: InputDecoration(
+                            labelText: 'Confrim Password',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: Colors.grey,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isConfirmPasswordObscure =
+                                      !isConfirmPasswordObscure;
+                                });
+                              },
+                              icon: Icon(isConfirmPasswordObscure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _teamIdController,
+                        decoration: InputDecoration(
+                            labelText: 'Team ID',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            errorText: _teamIDErrorText,
+                            prefixIcon: const Icon(
+                              Icons.group,
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your team ID';
+                          }
+                          return null;
+                        },
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.all(16),
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.blue),
+                            shape: const StadiumBorder()),
+                        onPressed: createAccount,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('SIGN UP'),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.blue),
-                      shape: const StadiumBorder()),
-                  onPressed: createAccount,
-                  child: const Text('SIGN UP'),
-                ),
-                const SizedBox(height: 8),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -198,6 +211,9 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
       _teamIDErrorText = null;
     });
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       final firebaseMessage = FirebaseMessaging.instance;
       await firebaseMessage.requestPermission();
       final fcmToken = await firebaseMessage.getToken();
@@ -216,15 +232,19 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
       if (response.statusCode == 201 && context.mounted) {
         // Success
         // Sign into Firebase
+        Map<String, dynamic> data = jsonDecode(response.body);
         try {
           FirebaseAuth.instance
               .signInWithEmailAndPassword(
                   email: _emailController.text.trim(),
                   password: _passwordController.text)
               .then((value) async {
-            final storage = FlutterSecureStorage();
+            const storage = FlutterSecureStorage();
             await storage.write(
                 key: globals.FSS_TEAM_ID, value: _teamIdController.text);
+            await storage.write(key: globals.FSS_NEW_ACCOUNT, value: 'true');
+            await storage.write(
+                key: globals.FSS_TEAM_NAME, value: data['team_name']);
             if (context.mounted) {
               Navigator.pushNamed(context, '/home');
             }
@@ -267,6 +287,12 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
             ),
           );
         }
+      }
+
+      if (context.mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
