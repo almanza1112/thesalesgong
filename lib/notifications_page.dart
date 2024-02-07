@@ -51,6 +51,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   } else {
                     final notifications = snapshot.data!.data() as Map;
                     List gongList = notifications["gong_history"];
+
+                    // Reverse the list to show the latest notification first
+                    gongList = List.from(gongList.reversed);
                     return ListView.builder(
                       itemCount: gongList.length,
                       itemBuilder: (context, index) {
@@ -69,7 +72,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             child: ListTile(
                               title: Text(name),
                               subtitle: Text(message),
-                              leading: Text(formatDateTime(timestamp)),
+                              leading: Text(_formatDateTime(timestamp)),
                             ),
                           ),
                         );
@@ -82,10 +85,33 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 
-  
-String formatDateTime(int millisecondsSinceEpoch) {
-  DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
-  String formattedDateTime = '${dateTime.month}/${dateTime.day}/${dateTime.year}\n ${dateTime.hour}:${dateTime.minute} ${dateTime.hour > 12 ? 'PM' : 'AM'}';
-  return formattedDateTime;
-}
+String _formatDateTime(int millisecondsSinceEpoch) {
+    // Create a DateTime object from milliseconds since epoch
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+
+    // Extract components of the DateTime object
+    int month = dateTime.month;
+    int day = dateTime.day;
+    int year = dateTime.year;
+    int hour = dateTime.hour;
+    int minute = dateTime.minute;
+    String period = (hour >= 12) ? 'PM' : 'AM';
+
+    // Format the date and time components into a string
+    String formattedDateTime =
+        '${_addLeadingZero(month)}/${_addLeadingZero(day)}/${year}\n ${_addLeadingZero(_getHourIn12HourFormat(hour))}:${_addLeadingZero(minute)} $period';
+
+    return formattedDateTime;
+  }
+
+// Helper function to add leading zero to single digit numbers
+  String _addLeadingZero(int number) {
+    return (number < 10) ? '0$number' : '$number';
+  }
+
+// Helper function to convert hour to 12-hour format
+  int _getHourIn12HourFormat(int hour) {
+    return (hour > 12) ? hour - 12 : hour;
+  }
 }

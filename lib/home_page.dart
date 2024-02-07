@@ -12,8 +12,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _messageController = TextEditingController();
   final storage = const FlutterSecureStorage();
+
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage> {
           context.mounted) {
         showDialog(
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Welcome to The Sales Gong'),
@@ -61,59 +66,91 @@ class _HomePageState extends State<HomePage> {
         drawer: menu(),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.asset(
-                'assets/images/gong.png',
-                height: 200,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                    hintText: 'Enter your message here',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40))),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the name on card';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: const StadiumBorder(),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset(
+                  'assets/images/gong.png',
+                  height: 200,
                 ),
-                onPressed: hitTheSalesGong,
-                child: const Text('HIT THE SALES GONG!'),
-              ),
-            ],
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _messageController,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                      hintText: 'Enter your message here',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40))),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Message cannot be empty';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                  ),
+                  onPressed: hitTheSalesGong,
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('HIT THE SALES GONG!'),
+                ),
+              ],
+            ),
           ),
         ));
   }
 
   void hitTheSalesGong() async {
-    String teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
-    var body = {
-      "message": _messageController.text,
-      "user": FirebaseAuth.instance.currentUser!.uid,
-      "name": FirebaseAuth.instance.currentUser!.displayName!,
-      "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
-      "team_ID": teamID
-    };
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      String teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
+      var body = {
+        "message": _messageController.text,
+        "user": FirebaseAuth.instance.currentUser!.uid,
+        "name": FirebaseAuth.instance.currentUser!.displayName!,
+        "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
+        "team_ID": teamID
+      };
 
-    http.Response response =
-        await http.post(Uri.parse("${globals.END_POINT}/gong/hit"), body: body);
+      http.Response response = await http
+          .post(Uri.parse("${globals.END_POINT}/gong/hit"), body: body);
 
-    if (response.statusCode == 200) {}
+      if (response.statusCode == 201) {
+        setState(() {
+          _isLoading = false;
+        });
+        _messageController.clear();
+        if (context.mounted) {
+          Navigator.pushNamed(context, '/notifications');
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to hit the Sales Gong'),
+            ),
+          );
+        }
+      }
+      if (context.mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   Widget menu() {
