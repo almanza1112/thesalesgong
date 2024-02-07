@@ -13,10 +13,36 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _messageController = TextEditingController();
-  final storage = FlutterSecureStorage();
-
+  final storage = const FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (await storage.read(key: globals.FSS_NEW_ACCOUNT) == "true" &&
+          context.mounted) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Welcome to The Sales Gong'),
+                content: const Text(
+                    'When you close a deal you are proud of, simply enter a message in the message box and HIT THE SALES GONG. Your team members will receive an alert and you can celebrate together, no maeer where you are.\n\nGo get’em!'),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      await storage.write(
+                          key: globals.FSS_NEW_ACCOUNT, value: "false");
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            });
+      }
+    });
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('The Sales Gong'),
@@ -106,7 +132,7 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Team'),
           onTap: () async {
             String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
-            if(context.mounted){
+            if (context.mounted) {
               Navigator.pushNamed(context, '/team', arguments: teamID);
             }
           },

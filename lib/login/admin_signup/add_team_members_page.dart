@@ -12,9 +12,12 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
   final List<String> _emailAddresses = [];
 
   final TextEditingController _emailController = TextEditingController();
+  late String _teamName;
 
   @override
   Widget build(BuildContext context) {
+    final String args = ModalRoute.of(context)!.settings.arguments as String;
+    _teamName = args;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Team Members'),
@@ -53,6 +56,7 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
             children: [
               TextField(
                 controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'Email Address'),
               ),
               const SizedBox(height: 16),
@@ -141,7 +145,7 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
       );
     } else {
       Navigator.pushNamed(context, '/admin_payment',
-          arguments: _emailAddresses);
+          arguments: {'emailAddresses': _emailAddresses, 'teamName': _teamName});
     }
   }
 }

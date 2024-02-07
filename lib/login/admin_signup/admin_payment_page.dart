@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 
@@ -19,15 +18,19 @@ class AdminPaymentPage extends StatefulWidget {
 
 class _AdminPaymentPageState extends State<AdminPaymentPage> {
   final double formPadding = 24;
-  late List<String> receivedEmailAddresses;
+  late List<String> _receivedEmailAddresses;
+  late String _teamName;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    final List<String> args =
-        ModalRoute.of(context)!.settings.arguments as List<String>;
-    receivedEmailAddresses = args;
+    final Map<dynamic, dynamic> args =
+        ModalRoute.of(context)!.settings.arguments as Map<dynamic, dynamic>;
 
-    double totalPrice = receivedEmailAddresses.length * 9.99;
+    _receivedEmailAddresses = args['emailAddresses'] as List<String>;
+    _teamName = args['teamName'] as String;
+
+    double totalPrice = (_receivedEmailAddresses.length + 1) * 9.99;
     DateTime purchaseDate = DateTime.now();
     DateTime expirationDate = purchaseDate.add(const Duration(days: 365));
 
@@ -46,7 +49,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildBreakdownItem(
-                  'Team Members', receivedEmailAddresses.length),
+                  'Team Members', _receivedEmailAddresses.length + 1),
               _buildBreakdownItem('Price per Email', 9.99),
               _buildBreakdownItem('Subscription Duration', '1 Year'),
               _buildBreakdownItem('Renewal Date',
@@ -82,7 +85,9 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                   shape: const StadiumBorder(),
                 ),
                 onPressed: completePurchase,
-                child: const Text("COMPLETE"),
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text("COMPLETE"),
               ),
             ],
           ),
@@ -115,27 +120,40 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
   }
 
   void completePurchase() async {
-  final firebaseMessage = FirebaseMessaging.instance;
-  await firebaseMessage.requestPermission();
-  final fcmToken = await firebaseMessage.getToken();
+    setState(() {
+      _isLoading = true;
+    });
+    final firebaseMessage = FirebaseMessaging.instance;
+    await firebaseMessage.requestPermission();
+    final fcmToken = await firebaseMessage.getToken();
 
-  var body = {
-    "name": FirebaseAuth.instance.currentUser!.displayName,
-    "email": FirebaseAuth.instance.currentUser!.email,
-    "uid": FirebaseAuth.instance.currentUser!.uid,
-    "team_members": receivedEmailAddresses.toString(),
-    "fcm_token": fcmToken,
-  };
-  http.Response response = await http.post(
-      Uri.parse("${globals.END_POINT}/sign_up/admin/complete_purchase"),
-      body: body);
+    var body = {
+      "name": FirebaseAuth.instance.currentUser!.displayName,
+      "email": FirebaseAuth.instance.currentUser!.email,
+      "uid": FirebaseAuth.instance.currentUser!.uid,
+      "team_name": _teamName,
+      "team_members": _receivedEmailAddresses.toString(),
+      "fcm_token": fcmToken,
+    };
+    http.Response response = await http.post(
+        Uri.parse("${globals.END_POINT}/sign_up/admin/complete_purchase"),
+        body: body);
 
-  if (response.statusCode == 201 && context.mounted) {
-    Map<String, dynamic> data = jsonDecode(response.body);
-    final storage = FlutterSecureStorage();
-    await storage.write(key: globals.FSS_TEAM_ID, value: data['team_ID']);
+    if (response.statusCode == 201) {
+      Map<String, dynamic> data = jsonDecode(response.body);
+      const storage = FlutterSecureStorage();
+      await storage.write(key: globals.FSS_TEAM_ID, value: data['team_ID']);
+      await storage.write(key: globals.FSS_TEAM_NAME, value: _teamName);
+      await storage.write(key: globals.FSS_NEW_ACCOUNT, value: 'true');
 
-    Navigator.pushNamed(context, '/home');
+      if (context.mounted) {
+        Navigator.pushNamed(context, '/home');
+      }
+    }
+    if(context.mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
-}
 }

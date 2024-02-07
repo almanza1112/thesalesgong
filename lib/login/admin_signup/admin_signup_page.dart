@@ -25,10 +25,12 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
   bool isPasswordObscure = true;
   bool isConfirmPasswordObscure = true;
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Admin Signup'),
         backgroundColor: Colors.white10,
@@ -46,6 +48,8 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                 SizedBox(height: formPadding),
                 TextFormField(
                   controller: _nameController,
+                  textCapitalization: TextCapitalization.words,
+                  autocorrect: true,
                   decoration: InputDecoration(
                       labelText: 'Name',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -65,6 +69,8 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                 SizedBox(height: formPadding),
                 TextFormField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  autocorrect: true,
                   decoration: InputDecoration(
                       labelText: 'Email',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -86,6 +92,7 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: isPasswordObscure,
+                  autocorrect: false,
                   decoration: InputDecoration(
                       labelText: 'Password',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -117,6 +124,7 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: isConfirmPasswordObscure,
+                  autocorrect: false,
                   decoration: InputDecoration(
                       labelText: 'Confrim Password',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -155,9 +163,10 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       shape: const StadiumBorder()),
-                  onPressed: createAccount,
-                  child: const Text("CREATE ACCOUNT"),
+                  onPressed: _isLoading ? null : createAccount,
+                  child: _isLoading ? const CircularProgressIndicator() : const Text("CREATE ACCOUNT"),
                 ),
+                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -171,6 +180,9 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
       _emailErrorText = null;
     });
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       var body = {
         "name": _nameController.text.trim(),
         "email": _emailController.text.trim(),
@@ -191,7 +203,7 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                     email: _emailController.text.trim(),
                     password: _passwordController.text)
                 .then((value) =>
-                    Navigator.pushNamed(context, '/add_team_members'));
+                    Navigator.pushNamed(context, '/add_team_name'));
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {
               print('No user found for that email.');
@@ -204,9 +216,13 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
         // errorInfo.code : "auth/email-already-exists" <-- this is from server
         // Error creating new user: The email address is already in use by another account.
         Map<String, dynamic> data = jsonDecode(response.body);
-        if (data['result'] == 'failure') {
+        if (data['message'] == 'auth/email-already-exists') {
           setState(() {
             _emailErrorText = "Email is already in use";
+          });
+        } else if(data['message'] == 'auth/invalid-email'){
+          setState(() {
+            _emailErrorText = "Email address is improperly formatted";
           });
         }
       } else {
@@ -216,6 +232,10 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
               const SnackBar(content: Text("Error creating new user")));
         }
       }
+
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

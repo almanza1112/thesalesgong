@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:thesalesgong/auth_service.dart';
 import 'package:thesalesgong/home_page.dart';
 import 'package:thesalesgong/login/admin_signup/add_team_members_page.dart';
+import 'package:thesalesgong/login/admin_signup/add_team_name_page.dart';
 import 'package:thesalesgong/login/admin_signup/admin_payment_page.dart';
 import 'package:thesalesgong/login/admin_signup/admin_signup_page.dart';
 import 'package:thesalesgong/login/login_page.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignupPage(),
         '/admin_signup': (context) => const AdminSignupPage(),
         '/team_member_signup': (context) => const TeamMemberSignupPage(),
+        '/add_team_name': (context) => const AddTeamNamePage(),
         '/add_team_members': (context) => const AddTeamMembersPage(),
         '/admin_payment': (context) => const AdminPaymentPage(),
         '/home': (context) => const HomePage(),
