@@ -118,6 +118,12 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         ListTile(
+          title: const Text('Name'),
+          onTap: () {
+            Navigator.pushNamed(context, '/name');
+          },
+        ),
+        ListTile(
           title: const Text('Email'),
           onTap: () {
             Navigator.pushNamed(context, '/email');
