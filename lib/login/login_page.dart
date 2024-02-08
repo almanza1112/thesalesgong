@@ -106,27 +106,35 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password)
         .then((value) async {
-          // Need to retrieve the team_id from firestore
-          FirebaseFirestore.instance
-              .collection('users')
-              .doc(value.user!.uid)
-              .get()
-              .then((DocumentSnapshot documentSnapshot) {
-            if (documentSnapshot.exists) {
-              // User document exists, save team_ID to FlutterSecureStorage
-              final storage = FlutterSecureStorage();
-              storage.write(
-                  key: globals.FSS_TEAM_ID,
-                  value: documentSnapshot.get('team_ID'));
-              Navigator.of(context).pushReplacementNamed('/home');
-            } else {
-              setState(() {
-                // TODO: Change this to a more user-friendly message
-                _emailErrorText = 'User does not exist';
-              });
-            }
+      // Need to retrieve the team_id from firestore
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(value.user!.uid)
+          .get()
+          .then((DocumentSnapshot documentSnapshot) async {
+        if (documentSnapshot.exists) {
+          // User document exists, save team_ID to FlutterSecureStorage
+          const storage = FlutterSecureStorage();
+
+          // store the user's team_ID in FlutterSecureStorage
+          await storage.write(
+              key: globals.FSS_TEAM_ID, value: documentSnapshot.get('team_ID'));
+
+          // set the gong tone to the default == 1, and allow gong alerts to 'Always'
+          await storage.write(key: globals.FSS_GONG_TONE, value: '1');
+          await storage.write(
+              key: globals.FSS_ALLOW_GONG_ALERTS, value: 'Always');
+
+          if (context.mounted) {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
+        } else {
+          setState(() {
+            // TODO: Change this to a more user-friendly message
+            _emailErrorText = 'User does not exist';
           });
-      
+        }
+      });
     }).catchError((error) {
       setState(() {
         _emailErrorText = error.message;

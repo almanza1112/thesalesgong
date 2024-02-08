@@ -9,6 +9,7 @@ import 'package:thesalesgong/login/login_page.dart';
 import 'package:thesalesgong/login/opening_page.dart';
 import 'package:thesalesgong/login/signup_page.dart';
 import 'package:thesalesgong/login/team_member_signup_page.dart';
+import 'package:thesalesgong/menu/custom_alerts_times_pages.dart';
 import 'package:thesalesgong/menu/email_page.dart';
 import 'package:thesalesgong/menu/name_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/notifications': (context) => const NotificationsPage(),
         '/team': (context) => const TeamPage(),
         '/notifications_settings': (context) => const NotificationSettingsPage(),
+        '/custom_alert_times': (context) => const CustomAlertTimesPage(),
         '/email': (context) => const EmailPage(),
         '/password': (context) => const PasswordPage(),
         '/name': (context) => const NamePage(),

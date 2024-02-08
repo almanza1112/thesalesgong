@@ -4,7 +4,7 @@ description: A new Flutter project.
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
 
-version: 1.0.2
+version: 1.0.4
 
 environment:
   sdk: '>=3.1.5 <4.0.0'
@@ -22,6 +22,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_secure_storage: ^9.0.0
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +39,4 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/sounds/

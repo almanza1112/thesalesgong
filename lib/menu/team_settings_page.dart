@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thesalesgong/data_classes/team_members.dart';
 
 class TeamPage extends StatefulWidget {
@@ -9,6 +10,22 @@ class TeamPage extends StatefulWidget {
 }
 
 class _TeamPageState extends State<TeamPage> {
+  final storage = const FlutterSecureStorage();
+  String teamName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeTeamName();
+  }
+
+  Future<void> _initializeTeamName() async {
+    teamName = await storage.read(key: "team_name") ?? "Team";
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final firestore = FirebaseFirestore.instance;
@@ -16,7 +33,7 @@ class _TeamPageState extends State<TeamPage> {
     String teamId = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Team'),
+          title: Text(teamName),
           backgroundColor: Colors.white10,
           foregroundColor: Colors.grey[600],
           shadowColor: Colors.transparent,
