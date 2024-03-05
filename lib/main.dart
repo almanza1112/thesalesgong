@@ -19,13 +19,13 @@ import 'package:thesalesgong/notifications_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+
   runApp(const MyApp());
 }
 
@@ -35,9 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'The Sales Gong',
-      theme: ThemeData(
-        useMaterial3: true
-      ),
+      theme: ThemeData(useMaterial3: true),
       home: AuthService().handleAuthStateNew(),
       routes: {
         '/opening': (context) => const OpeningPage(),
@@ -51,7 +49,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/notifications': (context) => const NotificationsPage(),
         '/team': (context) => const TeamPage(),
-        '/notifications_settings': (context) => const NotificationSettingsPage(),
+        '/notifications_settings': (context) =>
+            const NotificationSettingsPage(),
         '/custom_alert_times': (context) => const CustomAlertTimesPage(),
         '/email': (context) => const EmailPage(),
         '/password': (context) => const PasswordPage(),

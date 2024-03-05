@@ -4,6 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
+import 'package:thesalesgong/menu/team_settings_page.dart';
+import 'package:thesalesgong/notifications_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -57,57 +59,69 @@ class _HomePageState extends State<HomePage> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/notifications');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NotificationsPage(
+                              wasGongHit: false,
+                            )));
               },
               icon: const Icon(Icons.notifications),
             ),
           ],
         ),
         drawer: menu(),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image.asset(
-                  'assets/images/gong.png',
-                  height: 200,
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _messageController,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                      hintText: 'Enter your message here',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Message cannot be empty';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    shape: const StadiumBorder(),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 16),
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.asset(
+                        'assets/images/gong.png',
+                        height: 200,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _messageController,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                            hintText: 'Enter your message here',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Message cannot be empty';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 16),
+                        ),
+                        onPressed: hitTheSalesGong,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('HIT THE SALES GONG!'),
+                      ),
+                    ],
                   ),
-                  onPressed: hitTheSalesGong,
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('HIT THE SALES GONG!'),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ));
   }
 
@@ -134,7 +148,12 @@ class _HomePageState extends State<HomePage> {
         });
         _messageController.clear();
         if (context.mounted) {
-          Navigator.pushNamed(context, '/notifications');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const NotificationsPage(
+                        wasGongHit: true,
+                      )));
         }
       } else {
         if (context.mounted) {
@@ -170,7 +189,11 @@ class _HomePageState extends State<HomePage> {
           onTap: () async {
             String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
             if (context.mounted) {
-              Navigator.pushNamed(context, '/team', arguments: teamID);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return TeamPage(
+                  teamId: teamID!,
+                );
+              }));
             }
           },
         ),

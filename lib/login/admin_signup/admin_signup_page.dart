@@ -37,140 +37,147 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
         foregroundColor: Colors.grey[600],
         elevation: 0,
       ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _nameController,
-                  textCapitalization: TextCapitalization.words,
-                  autocorrect: true,
-                  decoration: InputDecoration(
-                      labelText: 'Name',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.person,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autocorrect: true,
-                  decoration: InputDecoration(
-                      labelText: 'Email',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      errorText: _emailErrorText,
-                      prefixIcon: const Icon(
-                        Icons.email,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: isPasswordObscure,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                      labelText: 'Password',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.lock,
-                        color: Colors.grey,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isPasswordObscure = !isPasswordObscure;
-                          });
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: SafeArea(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _nameController,
+                        textCapitalization: TextCapitalization.words,
+                        autocorrect: true,
+                        decoration: InputDecoration(
+                            labelText: 'Name',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
                         },
-                        icon: Icon(isPasswordObscure
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        color: Colors.grey,
                       ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: formPadding),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: isConfirmPasswordObscure,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                      labelText: 'Confrim Password',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.lock,
-                        color: Colors.grey,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isConfirmPasswordObscure =
-                                !isConfirmPasswordObscure;
-                          });
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: true,
+                        decoration: InputDecoration(
+                            labelText: 'Email',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            errorText: _emailErrorText,
+                            prefixIcon: const Icon(
+                              Icons.email,
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
                         },
-                        icon: Icon(isConfirmPasswordObscure
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        color: Colors.grey,
                       ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(40))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: isPasswordObscure,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                            labelText: 'Password',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: Colors.grey,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isPasswordObscure = !isPasswordObscure;
+                                });
+                              },
+                              icon: Icon(isPasswordObscure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: formPadding),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: isConfirmPasswordObscure,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                            labelText: 'Confrim Password',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              color: Colors.grey,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isConfirmPasswordObscure =
+                                      !isConfirmPasswordObscure;
+                                });
+                              },
+                              icon: Icon(isConfirmPasswordObscure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off),
+                              color: Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(40))),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.all(16),
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: const StadiumBorder()),
+                        onPressed: _isLoading ? null : createAccount,
+                        child: _isLoading ? const CircularProgressIndicator() : const Text("CREATE ACCOUNT"),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: const StadiumBorder()),
-                  onPressed: _isLoading ? null : createAccount,
-                  child: _isLoading ? const CircularProgressIndicator() : const Text("CREATE ACCOUNT"),
-                ),
-                const SizedBox(height: 8),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

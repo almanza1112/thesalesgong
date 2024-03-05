@@ -2,16 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thesalesgong/data_classes/team_members.dart';
+import 'package:http/http.dart' as http;
+import 'package:thesalesgong/globals.dart' as globals;
 
 class TeamPage extends StatefulWidget {
-  const TeamPage({Key? key}) : super(key: key);
+  final String? teamId;
+  const TeamPage({Key? key, this.teamId}) : super(key: key);
   @override
   State<TeamPage> createState() => _TeamPageState();
 }
 
 class _TeamPageState extends State<TeamPage> {
   final storage = const FlutterSecureStorage();
+
   String teamName = '';
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -30,28 +35,35 @@ class _TeamPageState extends State<TeamPage> {
   Widget build(BuildContext context) {
     final firestore = FirebaseFirestore.instance;
 
-    String teamId = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
         appBar: AppBar(
           title: Text(teamName),
           backgroundColor: Colors.white10,
           foregroundColor: Colors.grey[600],
           shadowColor: Colors.transparent,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: addTeamMember,
+            ),
+          ],
         ),
-        body: FutureBuilder(
-          future: firestore.collection("teams").doc(teamId).get(),
+        body: StreamBuilder(
+          stream:
+              firestore.collection("teams").doc(widget.teamId).snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else {
+  
               Map<String, dynamic> team =
                   snapshot.data!.data() as Map<String, dynamic>;
               List registeredTeamMembers = team["registered_team_members"];
               List emails = team["emails"];
               String notRegisteredYet = "Not registered yet";
-             
 
               List<TeamMember> teamMembers = [];
+
               for (var i = 0; i < emails.length; i++) {
                 String email = emails[i];
                 if (registeredTeamMembers
@@ -95,7 +107,12 @@ class _TeamPageState extends State<TeamPage> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(teamMembers[index].name, style: teamMembers[index].name == notRegisteredYet ? const TextStyle(fontStyle: FontStyle.italic) : null),
+                            Text(teamMembers[index].name,
+                                style:
+                                    teamMembers[index].name == notRegisteredYet
+                                        ? const TextStyle(
+                                            fontStyle: FontStyle.italic)
+                                        : null),
                             Text(teamMembers[index].role == "team_member"
                                 ? "Team Member"
                                 : "Admin"),
@@ -109,5 +126,59 @@ class _TeamPageState extends State<TeamPage> {
             }
           },
         ));
+  }
+
+  void addTeamMember() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add Email Address'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(labelText: 'Email Address'),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  _addEmailAddress(_emailController.text);
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _addEmailAddress(String emailAddress) async {
+    if (emailAddress.isNotEmpty) {
+      var body = {
+        "team_ID": widget.teamId,
+        "email": emailAddress,
+        "team_name": teamName,
+      };
+
+      http.Response response = await http.post(
+          Uri.parse("${globals.END_POINT}/account/add_teammember"),
+          body: body);
+
+      if (response.statusCode == 201) {
+      } else if (response.statusCode == 409) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Email address already exists'),
+            ),
+          );
+        }
+      }
+    }
   }
 }

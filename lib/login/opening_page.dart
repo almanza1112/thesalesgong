@@ -68,6 +68,7 @@ class OpeningPage extends StatelessWidget {
                 child: const Text("SIGN UP"),
               ),
             ),
+            const SizedBox(height: 8,)
           ],
         ),
       ),
