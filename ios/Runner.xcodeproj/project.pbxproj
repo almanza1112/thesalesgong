@@ -11,6 +11,9 @@
 		20F38252900007A6D5861809 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE43B86668D23CC5C0DBFB0E /* Pods_Runner.framework */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		63EF5FE82B9EDD6200726C02 /* gong2.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 63EF5FE52B9EDD6200726C02 /* gong2.aiff */; };
+		63EF5FE92B9EDD6200726C02 /* gong3.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 63EF5FE62B9EDD6200726C02 /* gong3.aiff */; };
+		63EF5FEA2B9EDD6200726C02 /* gong1.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 63EF5FE72B9EDD6200726C02 /* gong1.aiff */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -49,6 +52,10 @@
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		412390B1ED50F7E251142C8B /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		63EF5FE22B99B28D00726C02 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		63EF5FE52B9EDD6200726C02 /* gong2.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = gong2.aiff; sourceTree = "<group>"; };
+		63EF5FE62B9EDD6200726C02 /* gong3.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = gong3.aiff; sourceTree = "<group>"; };
+		63EF5FE72B9EDD6200726C02 /* gong1.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = gong1.aiff; sourceTree = "<group>"; };
 		6F4EA250EBD35F3E5BA5D029 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -105,7 +112,6 @@
 				D897FF53E1CBFC1076DF2EB8 /* Pods-RunnerTests.release.xcconfig */,
 				6F4EA250EBD35F3E5BA5D029 /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -123,6 +129,9 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				63EF5FE72B9EDD6200726C02 /* gong1.aiff */,
+				63EF5FE52B9EDD6200726C02 /* gong2.aiff */,
+				63EF5FE62B9EDD6200726C02 /* gong3.aiff */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -144,6 +153,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				63EF5FE22B99B28D00726C02 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -262,7 +272,10 @@
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				63EF5FE92B9EDD6200726C02 /* gong3.aiff in Resources */,
+				63EF5FEA2B9EDD6200726C02 /* gong1.aiff in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
+				63EF5FE82B9EDD6200726C02 /* gong2.aiff in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -472,6 +485,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = T4XDCCUB52;
 				ENABLE_BITCODE = NO;
@@ -657,6 +671,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = T4XDCCUB52;
 				ENABLE_BITCODE = NO;
@@ -682,6 +697,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = T4XDCCUB52;
 				ENABLE_BITCODE = NO;

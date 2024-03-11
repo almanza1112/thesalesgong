@@ -1,10 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thesalesgong/globals.dart' as globals;
 
 class NotificationSettingsPage extends StatefulWidget {
-  const NotificationSettingsPage({Key? key}) : super(key: key);
+  const NotificationSettingsPage({super.key});
   @override
   State<NotificationSettingsPage> createState() =>
       _NotificationSettingsPageState();
@@ -58,40 +60,19 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
             title: const Text('Gong Tone 1'),
             value: '1',
             groupValue: selectedGongTone,
-            onChanged: (value) async {
-              await player.play(AssetSource('sounds/gong_tone_1.mp3'));
-              await storage.write(key: globals.FSS_GONG_TONE, value: value!);
-
-              setState(() {
-                selectedGongTone = value;
-              });
-            },
+            onChanged: (value) => updateGong(value),
           ),
           RadioListTile<String>(
             title: const Text('Gong Tone 2'),
             value: '2',
             groupValue: selectedGongTone,
-            onChanged: (value) async {
-              await player.play(AssetSource('sounds/gong_tone_2.wav'));
-              await storage.write(key: globals.FSS_GONG_TONE, value: value!);
-
-              setState(() {
-                selectedGongTone = value;
-              });
-            },
+            onChanged: (value) => updateGong(value),
           ),
           RadioListTile<String>(
             title: const Text('Gong Tone 3'),
             value: '3',
             groupValue: selectedGongTone,
-            onChanged: (value) async {
-              await player.play(AssetSource('sounds/gong_tone_3.wav'));
-              await storage.write(key: globals.FSS_GONG_TONE, value: value!);
-
-              setState(() {
-                selectedGongTone = value;
-              });
-            },
+            onChanged: (value) => updateGong(value),
           ),
           const SizedBox(height: 24),
           // Allow Gong Alerts section
@@ -213,5 +194,31 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
         ],
       ),
     );
+  }
+
+  void updateGong(var value) async {
+    await player.play(AssetSource('sounds/gong$value.wav'));
+    await storage.write(key: globals.FSS_GONG_TONE, value: value!);
+
+    setState(() {
+      selectedGongTone = value;
+    });
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({'notification_sound': value}).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gong tone updated'),
+        ),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error updating gong tone'),
+        ),
+      );
+    });
   }
 }

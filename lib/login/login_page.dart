@@ -22,11 +22,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login Page'),
+        title: const Text('Login Page'),
       ),
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.all(16),
+          padding: const  EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
                 obscureText: isPasswordObscure,
@@ -120,8 +120,8 @@ class _LoginPageState extends State<LoginPage> {
           await storage.write(
               key: globals.FSS_TEAM_ID, value: documentSnapshot.get('team_ID'));
 
-          // set the gong tone to the default == 1, and allow gong alerts to 'Always'
-          await storage.write(key: globals.FSS_GONG_TONE, value: '1');
+          // store the gong tone
+          await storage.write(key: globals.FSS_GONG_TONE, value: documentSnapshot.get('notification_sound'));
           await storage.write(
               key: globals.FSS_ALLOW_GONG_ALERTS, value: 'Always');
 

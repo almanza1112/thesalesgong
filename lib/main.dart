@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:thesalesgong/auth_service.dart';
 import 'package:thesalesgong/home_page.dart';
@@ -17,6 +18,7 @@ import 'package:thesalesgong/menu/password_page.dart';
 import 'package:thesalesgong/menu/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:thesalesgong/services/notification_controller.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -25,13 +27,56 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        channelDescription: 'Basic notifications channel',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+      ),
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+          channelGroupKey: 'basic_channel_group',
+          channelGroupName: 'Basic Channel Group')
+    ],
+  );
+
+  bool isNotificationAllowed =
+      await AwesomeNotifications().isNotificationAllowed();
+  if (!isNotificationAllowed) {
+    await AwesomeNotifications().requestPermissionToSendNotifications();
+  }
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onDismissActionReceivedMethod:
+            NotificationController.onDismissActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            NotificationController.onNotificationDisplayedMethod);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
