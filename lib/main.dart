@@ -38,6 +38,7 @@ void main() async {
         channelDescription: 'Basic notifications channel',
         defaultColor: const Color(0xFF9D50DD),
         ledColor: Colors.white,
+        soundSource: 'gong1.mp3',
       ),
     ],
     channelGroups: [

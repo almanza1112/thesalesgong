@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 
 class AdminPaymentPage extends StatefulWidget {
-  const AdminPaymentPage({Key? key}) : super(key: key);
+  const AdminPaymentPage({super.key});
 
   @override
   State<AdminPaymentPage> createState() => _AdminPaymentPageState();
@@ -31,9 +31,9 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     _receivedEmailAddresses = args['emailAddresses'] as List<String>;
     _teamName = args['teamName'] as String;
 
-    double totalPrice = (_receivedEmailAddresses.length + 1) * 9.99;
+    double totalPrice = (_receivedEmailAddresses.length + 1) * 5.00;
     DateTime purchaseDate = DateTime.now();
-    DateTime expirationDate = purchaseDate.add(const Duration(days: 365));
+    DateTime expirationDate = purchaseDate.add(const Duration(days: 30));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -51,8 +51,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             children: [
               _buildBreakdownItem(
                   'Team Members', _receivedEmailAddresses.length + 1),
-              _buildBreakdownItem('Price per Email', 9.99),
-              _buildBreakdownItem('Subscription Duration', '1 Year'),
+              _buildBreakdownItem('Price per Email', '\$5.00'),
+              _buildBreakdownItem('Subscription Duration', '1 month'),
               _buildBreakdownItem('Renewal Date',
                   DateFormat('MM/dd/yyyy').format(expirationDate)),
               Padding(
