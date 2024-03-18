@@ -1,14 +1,15 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/almanza1112/Development/flutter
-FLUTTER_APPLICATION_PATH=/Users/almanza1112/VisualStudioProjects/thesalesgong
+FLUTTER_ROOT=/Users/almanza1112/Developer/flutter
+FLUTTER_APPLICATION_PATH=/Users/almanza1112/Developer/Projects/thesalesgong
 COCOAPODS_PARALLEL_CODE_SIGN=true
-FLUTTER_TARGET=lib/main.dart
+FLUTTER_TARGET=/Users/almanza1112/Developer/Projects/thesalesgong/lib/main.dart
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.5
 FLUTTER_BUILD_NUMBER=1.0.5
 EXCLUDED_ARCHS[sdk=iphonesimulator*]=i386
 EXCLUDED_ARCHS[sdk=iphoneos*]=armv7
+DART_DEFINES=RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ==,RkxVVFRFUl9XRUJfQ0FOVkFTS0lUX1VSTD1odHRwczovL3d3dy5nc3RhdGljLmNvbS9mbHV0dGVyLWNhbnZhc2tpdC8yZTRiYTljNmZiNDk5Y2NkNGU4MTQyMDU0Mzc4M2NjNzI2N2FlNDA2Lw==
 DART_OBFUSCATION=false
-TRACK_WIDGET_CREATION=false
-TREE_SHAKE_ICONS=true
-PACKAGE_CONFIG=/Users/almanza1112/VisualStudioProjects/thesalesgong/.dart_tool/package_config.json
+TRACK_WIDGET_CREATION=true
+TREE_SHAKE_ICONS=false
+PACKAGE_CONFIG=/Users/almanza1112/Developer/Projects/thesalesgong/.dart_tool/package_config.json

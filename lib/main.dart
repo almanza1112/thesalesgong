@@ -1,4 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:thesalesgong/auth_service.dart';
 import 'package:thesalesgong/home_page.dart';
@@ -21,6 +22,24 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:thesalesgong/services/notification_controller.dart';
 import 'firebase_options.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   // If you're going to use other Firebase services in the background, such as Firestore,
+//   // make sure you call `initializeApp` before using other Firebase services.
+//   //await Firebase.initializeApp();
+
+// //   AwesomeNotifications().createNotification(
+// //   content: NotificationContent(
+// //       id: 10,
+// //       channelKey: 'basic_channel',
+// //       actionType: ActionType.Default,
+// //       title: message.notification!.title,
+// //       body: message.notification!.body,
+// //   )
+// // );
+
+   print("Handling a background message: ${message.notification?.android?.channelId}");
+ }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -28,17 +47,40 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   await AwesomeNotifications().initialize(
     null,
     [
       NotificationChannel(
         channelGroupKey: 'basic_channel_group',
-        channelKey: 'basic_channel',
+        channelKey: 'basic_channel1',
         channelName: 'Basic Notifications',
         channelDescription: 'Basic notifications channel',
         defaultColor: const Color(0xFF9D50DD),
         ledColor: Colors.white,
-        soundSource: 'gong1.mp3',
+        playSound: true,
+        soundSource: 'resource://raw/gong1',
+      ),
+      NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel2',
+        channelName: 'Basic Notifications',
+        channelDescription: 'Basic notifications channel',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        playSound: true,
+        soundSource: 'resource://raw/gong2',
+      ),
+      NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel3',
+        channelName: 'Basic Notifications',
+        channelDescription: 'Basic notifications channel',
+        defaultColor: const Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        playSound: true,
+        soundSource: 'resource://raw/gong3',
       ),
     ],
     channelGroups: [

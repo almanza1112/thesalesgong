@@ -13,13 +13,7 @@ class NotificationController {
   static Future<void> onNotificationDisplayedMethod(
       ReceivedNotification receivedNotification) async {
     print('Notification displayed');
-    AwesomeNotifications().createNotification(
-        content: NotificationContent(
-            id: 1,
-            channelKey: 'basic_channel',
-            title: "Hello world",
-            body: 'This is a notification',
-            ));
+
   }
 
   /// Use this method to detect if the user dismissed a notification
