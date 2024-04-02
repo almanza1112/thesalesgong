@@ -7,7 +7,7 @@ import 'package:thesalesgong/globals.dart' as globals;
 
 class NotificationsPage extends StatefulWidget {
   final bool? wasGongHit;
-  const NotificationsPage({Key? key, this.wasGongHit}) : super(key: key);
+  const NotificationsPage({super.key, this.wasGongHit});
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
@@ -48,83 +48,106 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
-        backgroundColor: Colors.white10,
-        foregroundColor: Colors.grey[600],
-        shadowColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+        ),
       ),
       body: teamId.isEmpty
           ? const Center(child: Text('No Gongs yet!'))
-          : Stack(
-              children: [
-                RefreshIndicator(
-                  onRefresh: _refreshNotifications,
-                  child: FutureBuilder<DocumentSnapshot>(
-                    future: firestore.collection("teams").doc(teamId).get(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else {
-                        final notifications = snapshot.data!.data() as Map;
-                        List gongList = notifications["gong_history"];
-
-                        // Reverse the list to show the latest notification first
-                        gongList = List.from(gongList.reversed);
-                        return ListView.builder(
-                          itemCount: gongList.length,
-                          itemBuilder: (context, index) {
-                            final notification = gongList[index];
-                            final name = notification['name'];
-                            final message = notification['message'];
-                            int timestamp =
-                                int.parse(notification['timestamp']);
-                            return Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.grey[200],
+          : Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color.fromRGBO(30, 58, 138, 1),
+                  Color.fromRGBO(79, 70, 229, 1)
+                ],
+              ),
+            ),
+            child: Stack(
+                children: [
+                  RefreshIndicator(
+                    onRefresh: _refreshNotifications,
+                    child: FutureBuilder<DocumentSnapshot>(
+                      future: firestore.collection("teams").doc(teamId).get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else {
+                          final notifications = snapshot.data!.data() as Map;
+                          List gongList = notifications["gong_history"];
+            
+                          // Reverse the list to show the latest notification first
+                          gongList = List.from(gongList.reversed);
+                          return ListView.builder(
+                            itemCount: gongList.length,
+                            itemBuilder: (context, index) {
+                              final notification = gongList[index];
+                              final name = notification['name'];
+                              final message = notification['message'];
+                              int timestamp =
+                                  int.parse(notification['timestamp']);
+                              return Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.grey[200],
+                                  ),
+                                  child: ListTile(
+                                    title: Text(name),
+                                    subtitle: Text(message),
+                                    leading: Text(_formatDateTime(timestamp)),
+                                  ),
                                 ),
-                                child: ListTile(
-                                  title: Text(name),
-                                  subtitle: Text(message),
-                                  leading: Text(_formatDateTime(timestamp)),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    },
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
                   ),
-                ),
-                if (widget.wasGongHit!)
-                  Visibility(
-                    visible: _visible,
-                    child: Positioned(
-                      top: 0,
-                      bottom: 0,
-                      right: 0,
-                      left: 0,
-                      child: Container(
-                        color: Colors.white.withOpacity(0.8),
-                        child: Center(
-                          child: Text(
-                            saying,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                  if (widget.wasGongHit!)
+                    Visibility(
+                      visible: _visible,
+                      child: Positioned(
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: Container(
+                          color: Colors.white.withOpacity(0.8),
+                          child: Center(
+                            child: Text(
+                              saying,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-              ],
-            ),
+                    )
+                ],
+              ),
+          ),
     );
   }
 

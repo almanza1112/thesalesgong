@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thesalesgong/globals.dart' as globals;
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -25,39 +24,80 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login Page'),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color.fromRGBO(30, 58, 138, 1),
+              Color.fromRGBO(79, 70, 229, 1)
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Spacer(),
+                TextFormField(
+                  controller: _emailController,
+                  cursorColor: Colors.white,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
                     labelText: 'Email',
+                    labelStyle: const TextStyle(color: Colors.white),
                     errorText: _emailErrorText,
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     prefixIcon: const Icon(
                       Icons.email,
                       color: Colors.grey,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40))),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: isPasswordObscure,
-                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: const BorderSide(
+                          color: Colors.grey), // Color when not focused
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: const BorderSide(
+                          color: Colors.white), // Color when focused
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: isPasswordObscure,
+                  style: const TextStyle(color: Colors.white),
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
                     labelText: 'Password',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    focusColor: const Color.fromRGBO(34, 197, 94, 1),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     prefixIcon: const Icon(
                       Icons.lock,
@@ -74,27 +114,37 @@ class _LoginPageState extends State<LoginPage> {
                           : Icons.visibility_off),
                       color: Colors.grey,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40))),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
-                  }
-                  return null;
-                },
-              ),
-              const Spacer(),
-              TextButton(
-                style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.blue),
-                    shape: const StadiumBorder()),
-                onPressed: login,
-                child: const Text('LOGIN'),
-              ),
-            ],
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: const BorderSide(
+                          color: Colors.grey), // Color when not focused
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: const BorderSide(
+                          color: Colors.white), // Color when focused
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a password';
+                    }
+                    return null;
+                  },
+                ),
+                const Spacer(),
+                TextButton(
+                  style: TextButton.styleFrom(
+                      padding: const EdgeInsets.all(16),
+                      backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.blue),
+                      shape: const StadiumBorder()),
+                  onPressed: login,
+                  child: const Text('LOGIN'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

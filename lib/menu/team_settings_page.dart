@@ -7,7 +7,7 @@ import 'package:thesalesgong/globals.dart' as globals;
 
 class TeamPage extends StatefulWidget {
   final String? teamId;
-  const TeamPage({Key? key, this.teamId}) : super(key: key);
+  const TeamPage({super.key, this.teamId});
   @override
   State<TeamPage> createState() => _TeamPageState();
 }
@@ -38,9 +38,20 @@ class _TeamPageState extends State<TeamPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(teamName),
-          backgroundColor: Colors.white10,
-          foregroundColor: Colors.grey[600],
-          shadowColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color.fromRGBO(30, 58, 138, 1),
+                  Color.fromRGBO(79, 70, 229, 1)
+                ],
+              ),
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
@@ -48,83 +59,94 @@ class _TeamPageState extends State<TeamPage> {
             ),
           ],
         ),
-        body: StreamBuilder(
-          stream:
-              firestore.collection("teams").doc(widget.teamId).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-  
-              Map<String, dynamic> team =
-                  snapshot.data!.data() as Map<String, dynamic>;
-              List registeredTeamMembers = team["registered_team_members"];
-              List emails = team["emails"];
-              String notRegisteredYet = "Not registered yet";
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+          child: StreamBuilder(
+            stream:
+                firestore.collection("teams").doc(widget.teamId).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                Map<String, dynamic> team =
+                    snapshot.data!.data() as Map<String, dynamic>;
+                List registeredTeamMembers = team["registered_team_members"];
+                List emails = team["emails"];
+                String notRegisteredYet = "Not registered yet";
 
-              List<TeamMember> teamMembers = [];
+                List<TeamMember> teamMembers = [];
 
-              for (var i = 0; i < emails.length; i++) {
-                String email = emails[i];
-                if (registeredTeamMembers
-                    .any((member) => member["email"] == email)) {
-                  // Email is registered, add team member details
-                  var registeredMember = registeredTeamMembers
-                      .firstWhere((member) => member["email"] == email);
-                  teamMembers.add(TeamMember(
-                    email: email,
-                    name: registeredMember["name"],
-                    role: registeredMember["role"],
-                  ));
-                } else {
-                  // Email is not registered, add default details
-                  teamMembers.add(TeamMember(
-                    email: email,
-                    name: notRegisteredYet,
-                    role: "team_member",
-                  ));
+                for (var i = 0; i < emails.length; i++) {
+                  String email = emails[i];
+                  if (registeredTeamMembers
+                      .any((member) => member["email"] == email)) {
+                    // Email is registered, add team member details
+                    var registeredMember = registeredTeamMembers
+                        .firstWhere((member) => member["email"] == email);
+                    teamMembers.add(TeamMember(
+                      email: email,
+                      name: registeredMember["name"],
+                      role: registeredMember["role"],
+                    ));
+                  } else {
+                    // Email is not registered, add default details
+                    teamMembers.add(TeamMember(
+                      email: email,
+                      name: notRegisteredYet,
+                      role: "team_member",
+                    ));
+                  }
                 }
-              }
 
-              return ListView.builder(
-                itemCount: teamMembers.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: teamMembers[index].name == notRegisteredYet
-                            ? Colors.grey[200]
-                            : Colors.blue[100],
-                        //border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: ListTile(
-                        leading: teamMembers[index].role == "team_member"
-                            ? const Icon(Icons.people)
-                            : const Icon(Icons.person),
-                        title: Text(teamMembers[index].email),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(teamMembers[index].name,
-                                style:
-                                    teamMembers[index].name == notRegisteredYet
-                                        ? const TextStyle(
-                                            fontStyle: FontStyle.italic)
-                                        : null),
-                            Text(teamMembers[index].role == "team_member"
-                                ? "Team Member"
-                                : "Admin"),
-                          ],
+                return ListView.builder(
+                  itemCount: teamMembers.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: teamMembers[index].name == notRegisteredYet
+                              ? Colors.grey[200]
+                              : Colors.blue[100],
+                          //border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ListTile(
+                          leading: teamMembers[index].role == "team_member"
+                              ? const Icon(Icons.people)
+                              : const Icon(Icons.person),
+                          title: Text(teamMembers[index].email),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(teamMembers[index].name,
+                                  style: teamMembers[index].name ==
+                                          notRegisteredYet
+                                      ? const TextStyle(
+                                          fontStyle: FontStyle.italic)
+                                      : null),
+                              Text(teamMembers[index].role == "team_member"
+                                  ? "Team Member"
+                                  : "Admin"),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
-            }
-          },
+                    );
+                  },
+                );
+              }
+            },
+          ),
         ));
   }
 
@@ -143,12 +165,12 @@ class _TeamPageState extends State<TeamPage> {
                 decoration: const InputDecoration(labelText: 'Email Address'),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                   _addEmailAddress(_emailController.text);
                 },
-                child: const Text('Add'),
+                child: const Text('ADD'),
               ),
             ],
           ),

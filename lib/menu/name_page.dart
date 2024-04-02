@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 
 class NamePage extends StatefulWidget {
-  const NamePage({Key? key}) : super(key: key);
+  const NamePage({super.key});
   @override
   State<NamePage> createState() => _NamePageState();
 }
@@ -27,56 +27,92 @@ class _NamePageState extends State<NamePage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Name'),
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  const SizedBox(height: 24),
-                  TextFormField(
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: const Icon(
-                        Icons.person,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your name';
-                      }
-
-                      if (value.trim() ==
-                          FirebaseAuth.instance.currentUser!.displayName!) {
-                        return 'Please enter a different name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        shape: const StadiumBorder()),
-                    onPressed: _updateName,
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text("UPDATE NAME"),
-                  ),
-                  const SizedBox(height: 8),
+          elevation: 0,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color.fromRGBO(30, 58, 138, 1),
+                  Color.fromRGBO(79, 70, 229, 1)
                 ],
+              ),
+            ),
+          ),
+        ),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: _nameController,
+                      keyboardType: TextInputType.name,
+                      cursorColor: Colors.white,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: const Icon(
+                          Icons.person,
+                          color: Colors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: const BorderSide(
+                              color: Colors.grey), // Color when not focused
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: const BorderSide(
+                              color: Colors.white), // Color when focused
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your name';
+                        }
+
+                        if (value.trim() ==
+                            FirebaseAuth.instance.currentUser!.displayName!) {
+                          return 'Please enter a different name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(16),
+                          backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
+                          foregroundColor: Colors.white,
+                          shape: const StadiumBorder()),
+                      onPressed: _updateName,
+                      child: _isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text("UPDATE NAME"),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
           ),

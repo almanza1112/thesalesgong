@@ -22,9 +22,20 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Team Members'),
-        backgroundColor: Colors.white10,
-        foregroundColor: Colors.grey[600],
-        shadowColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: _showAddDialog,
@@ -33,15 +44,29 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
+        foregroundColor: Colors.white,
         onPressed: validateEmailAddressList,
         child: const Icon(Icons.arrow_forward),
       ),
-      body: AnimatedList(
-        key: _listKey,
-        initialItemCount: _emailAddresses.length,
-        itemBuilder: (context, index, animation) {
-          return _buildItem(_emailAddresses[index], animation);
-        },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color.fromRGBO(30, 58, 138, 1),
+              Color.fromRGBO(79, 70, 229, 1)
+            ],
+          ),
+        ),
+        child: AnimatedList(
+          key: _listKey,
+          initialItemCount: _emailAddresses.length,
+          itemBuilder: (context, index, animation) {
+            return _buildItem(_emailAddresses[index], animation);
+          },
+        ),
       ),
     );
   }
@@ -61,12 +86,12 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
                 decoration: const InputDecoration(labelText: 'Email Address'),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                   _addEmailAddress(_emailController.text);
                 },
-                child: const Text('Add'),
+                child: const Text('ADD', style: TextStyle(color: Colors.blue)),
               ),
             ],
           ),

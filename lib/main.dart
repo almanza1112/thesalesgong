@@ -37,8 +37,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // //       body: message.notification!.body,
 // //   )
 // // );
-
-   print("Handling a background message: ${message.notification?.android?.channelId}");
+  print('onBackgroundMessage called');
+  print("Handling a background message: ${message.notification?.android?.channelId}");
  }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,23 +100,24 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+
   @override
   void initState() {
-    AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onDismissActionReceivedMethod:
-            NotificationController.onDismissActionReceivedMethod,
-        onNotificationCreatedMethod:
-            NotificationController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod:
-            NotificationController.onNotificationDisplayedMethod);
+    // AwesomeNotifications().setListeners(
+    //     onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+    //     onDismissActionReceivedMethod:
+    //         NotificationController.onDismissActionReceivedMethod,
+    //     onNotificationCreatedMethod:
+    //         NotificationController.onNotificationCreatedMethod,
+    //     onNotificationDisplayedMethod:
+    //         NotificationController.onNotificationDisplayedMethod);
     super.initState();
   }
 

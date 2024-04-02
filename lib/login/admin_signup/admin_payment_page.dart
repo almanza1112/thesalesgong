@@ -39,58 +39,81 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Payment'),
-        backgroundColor: Colors.white10,
-        foregroundColor: Colors.grey[600],
         elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildBreakdownItem('Team Members',
-                  widget.adminSigningUp!.teamEmailAddresses!.length + 1),
-              _buildBreakdownItem('Price per Email', '\$5.00'),
-              _buildBreakdownItem('Subscription Duration', '1 month'),
-              _buildBreakdownItem('Renewal Date',
-                  DateFormat('MM/dd/yyyy').format(expirationDate)),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Total Price",
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    Text(
-                      '\$${totalPrice.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white, // Modern color
-                  shape: const StadiumBorder(),
-                ),
-                onPressed: completePurchase,
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text("COMPLETE"),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color.fromRGBO(30, 58, 138, 1),
+              Color.fromRGBO(79, 70, 229, 1)
             ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildBreakdownItem('Team Members',
+                    widget.adminSigningUp!.teamEmailAddresses!.length + 1),
+                _buildBreakdownItem('Price per Email', '\$5.00'),
+                _buildBreakdownItem('Subscription Duration', '1 month'),
+                _buildBreakdownItem('Renewal Date',
+                    DateFormat('MM/dd/yyyy').format(expirationDate)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "TOTAL PRICE",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        '\$${totalPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                    backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
+                    foregroundColor: Colors.white, // Modern color
+                    shape: const StadiumBorder(),
+                  ),
+                  onPressed: completePurchase,
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text("COMPLETE"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -108,12 +131,12 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
-                color: Colors.grey[600]),
+                color: Colors.grey[400]),
           ),
           Text(
             '$value',
             style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+                fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
           ),
         ],
       ),

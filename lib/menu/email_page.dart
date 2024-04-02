@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 
 class EmailPage extends StatefulWidget {
-  const EmailPage({Key? key}) : super(key: key);
+  const EmailPage({super.key});
 
   @override
   State<EmailPage> createState() => _EmailPageState();
@@ -94,77 +94,127 @@ class _EmailPageState extends State<EmailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Email'),
-      ),
-      body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 24),
-                const Text(
-                  "You will be logged out after changing your email and must log back in with your new email.",
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-                TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        labelText: 'Email',
-                        errorText: emailErrorText,
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: const Icon(
-                          Icons.email,
-                          color: Colors.grey,
-                        ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(40))),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter valid email';
-                      }
-                      return null;
-                    }),
-                const SizedBox(height: 16),
-                TextFormField(
-                    controller: _confirmEmailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        labelText: 'Confirm New Email',
-                        errorText: emailErrorText,
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: const Icon(
-                          Icons.email,
-                          color: Colors.grey,
-                        ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(40))),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your new email';
-                      }
-                      if (value.trim() != _emailController.text.trim()) {
-                        return 'Emails do not match';
-                      }
-                      return null;
-                    }),
-                const Spacer(),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: const StadiumBorder()),
-                  onPressed: _changeEmail,
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text("CHANGE EMAIL"),
-                ),
-                const SizedBox(height: 8),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
               ],
+            ),
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color.fromRGBO(30, 58, 138, 1),
+              Color.fromRGBO(79, 70, 229, 1)
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 24),
+                  const Text(
+                    "You will be logged out after changing your email and must log back in with your new email.",
+                    style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      cursorColor: Colors.white,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        errorText: emailErrorText,
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Colors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: const BorderSide(
+                              color: Colors.grey), // Color when not focused
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: const BorderSide(
+                              color: Colors.white), // Color when focused
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter valid email';
+                        }
+                        return null;
+                      }),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                      controller: _confirmEmailController,
+                      keyboardType: TextInputType.emailAddress,
+                      cursorColor: Colors.white,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Confirm New Email',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        errorText: emailErrorText,
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        prefixIcon: const Icon(
+                          Icons.email,
+                          color: Colors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: const BorderSide(
+                              color: Colors.grey), // Color when not focused
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                          borderSide: const BorderSide(
+                              color: Colors.white), // Color when focused
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your new email';
+                        }
+                        if (value.trim() != _emailController.text.trim()) {
+                          return 'Emails do not match';
+                        }
+                        return null;
+                      }),
+                  const Spacer(),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(16),
+                        backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder()),
+                    onPressed: _changeEmail,
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text("CHANGE EMAIL"),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
           ),
         ),

@@ -34,72 +34,121 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Admin Signup'),
-        backgroundColor: Colors.white10,
-        foregroundColor: Colors.grey[600],
         elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+        ),
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: SafeArea(
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: formPadding),
-                      TextFormField(
-                        controller: _nameController,
-                        textCapitalization: TextCapitalization.words,
-                        autocorrect: true,
-                        decoration: InputDecoration(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color.fromRGBO(30, 58, 138, 1),
+              Color.fromRGBO(79, 70, 229, 1)
+            ],
+          ),
+        ),
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: SafeArea(
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: formPadding),
+                        TextFormField(
+                          controller: _nameController,
+                          textCapitalization: TextCapitalization.words,
+                          autocorrect: true,
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
                             labelText: 'Name',
+                            labelStyle: const TextStyle(color: Colors.white),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             prefixIcon: const Icon(
                               Icons.person,
                               color: Colors.grey,
                             ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: formPadding),
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        autocorrect: true,
-                        decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey), // Color when not focused
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.white), // Color when focused
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your name';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: formPadding),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          autocorrect: true,
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
                             labelText: 'Email',
+                            labelStyle: const TextStyle(color: Colors.white),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             errorText: _emailErrorText,
                             prefixIcon: const Icon(
                               Icons.email,
                               color: Colors.grey,
                             ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: formPadding),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: isPasswordObscure,
-                        autocorrect: false,
-                        decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey), // Color when not focused
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.white), // Color when focused
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: formPadding),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: isPasswordObscure,
+                          autocorrect: false,
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
                             labelText: 'Password',
+                            labelStyle: const TextStyle(color: Colors.white),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             prefixIcon: const Icon(
                               Icons.lock,
@@ -116,22 +165,34 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                                   : Icons.visibility_off),
                               color: Colors.grey,
                             ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a password';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: formPadding),
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: isConfirmPasswordObscure,
-                        autocorrect: false,
-                        decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey), // Color when not focused
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.white), // Color when focused
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a password';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: formPadding),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: isConfirmPasswordObscure,
+                          autocorrect: false,
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
                             labelText: 'Confrim Password',
+                            labelStyle: const TextStyle(color: Colors.white),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             prefixIcon: const Icon(
                               Icons.lock,
@@ -149,38 +210,49 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                                   : Icons.visibility_off),
                               color: Colors.grey,
                             ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-                      const Spacer(),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                            padding: const EdgeInsets.all(16),
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            shape: const StadiumBorder()),
-                        onPressed: _isLoading ? null : createAccount,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text("CREATE ACCOUNT"),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey), // Color when not focused
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.white), // Color when focused
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your password';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(16),
+                              backgroundColor:
+                                  const Color.fromRGBO(34, 197, 94, 1),
+                              foregroundColor: Colors.white,
+                              shape: const StadiumBorder()),
+                          onPressed: _isLoading ? null : createAccount,
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text("CREATE ACCOUNT"),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

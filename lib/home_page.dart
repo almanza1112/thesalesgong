@@ -9,7 +9,7 @@ import 'package:thesalesgong/menu/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -20,6 +20,54 @@ class _HomePageState extends State<HomePage> {
   final storage = const FlutterSecureStorage();
 
   bool _isLoading = false;
+
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          String body = message.notification!.body!;
+          // Regular expression to match text within double quotes
+          RegExp regExp = RegExp(r'"([^"]*)"');
+          // Extract message within quotes
+          String extractedMessage = regExp.firstMatch(body)!.group(1)!;
+          return AlertDialog(
+            title: Text(message.notification!.title!),
+            content: Text(extractedMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('AWESOME!'),
+              ),
+            ],
+          );
+        });
+  }
+
+  @override
+  void initState() {
+    setupInteractedMessage();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +102,20 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('The Sales Gong'),
-          backgroundColor: Colors.white10,
-          foregroundColor: Colors.grey[600],
-          shadowColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color.fromRGBO(30, 58, 138, 1),
+                  Color.fromRGBO(79, 70, 229, 1)
+                ],
+              ),
+            ),
+          ),
           actions: [
             IconButton(
               onPressed: () {
@@ -72,63 +131,86 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         drawer: menu(),
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Image.asset(
-                        'assets/images/gong.png',
-                        height: 200,
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _messageController,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                            hintText: 'Enter your message here',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40))),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Message cannot be empty';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: const StadiumBorder(),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),
+          ),
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Image.asset(
+                          'assets/images/gong.png',
+                          height: 200,
                         ),
-                        onPressed: hitTheSalesGong,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text('HIT THE SALES GONG!'),
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _messageController,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: const TextStyle(color: Colors.white),
+                          cursorColor: Colors.white,
+                          decoration: InputDecoration(
+                            hintText: 'Enter your message here',
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.grey), // Color when not focused
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.white), // Color when focused
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Message cannot be empty';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(34, 197, 94, 1),
+                            foregroundColor: Colors.white,
+                            shape: const StadiumBorder(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 16),
+                          ),
+                          onPressed: hitTheSalesGong,
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('HIT THE SALES GONG!'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ));
   }
 
   void hitTheSalesGong() async {
-    //final token = await FirebaseMessaging.instance.getToken();
-    //print(token); 
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -136,7 +218,7 @@ class _HomePageState extends State<HomePage> {
       String teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
       var body = {
         "message": _messageController.text,
-        "user": FirebaseAuth.instance.currentUser!.uid,
+        "uid": FirebaseAuth.instance.currentUser!.uid,
         "name": FirebaseAuth.instance.currentUser!.displayName!,
         "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
         "team_ID": teamID
@@ -184,8 +266,14 @@ class _HomePageState extends State<HomePage> {
           accountName: Text(FirebaseAuth.instance.currentUser!.displayName!),
           accountEmail: Text(FirebaseAuth.instance.currentUser!.email!),
           decoration: const BoxDecoration(
-            color: Colors.blue,
-          ),
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(30, 58, 138, 1),
+                Color.fromRGBO(79, 70, 229, 1)
+              ],
+            ),)
         ),
         ListTile(
           title: const Text('Team'),
