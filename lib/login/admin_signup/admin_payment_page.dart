@@ -1,17 +1,23 @@
 import 'dart:convert';
-
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import 'package:thesalesgong/data_classes/admin_signing_up.dart';
 import 'package:thesalesgong/globals.dart' as globals;
 
 class AdminPaymentPage extends StatefulWidget {
-  const AdminPaymentPage({super.key});
+  final AdminSigningUp? adminSigningUp;
+  const AdminPaymentPage({super.key, this.adminSigningUp});
 
   @override
   State<AdminPaymentPage> createState() => _AdminPaymentPageState();
@@ -19,19 +25,13 @@ class AdminPaymentPage extends StatefulWidget {
 
 class _AdminPaymentPageState extends State<AdminPaymentPage> {
   final double formPadding = 24;
-  late List<String> _receivedEmailAddresses;
-  late String _teamName;
+
   bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    final Map<dynamic, dynamic> args =
-        ModalRoute.of(context)!.settings.arguments as Map<dynamic, dynamic>;
-
-    _receivedEmailAddresses = args['emailAddresses'] as List<String>;
-    _teamName = args['teamName'] as String;
-
-    double totalPrice = (_receivedEmailAddresses.length + 1) * 5.00;
+    double totalPrice =
+        (widget.adminSigningUp!.teamEmailAddresses!.length + 1) * 5.00;
     DateTime purchaseDate = DateTime.now();
     DateTime expirationDate = purchaseDate.add(const Duration(days: 30));
 
@@ -49,8 +49,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildBreakdownItem(
-                  'Team Members', _receivedEmailAddresses.length + 1),
+              _buildBreakdownItem('Team Members',
+                  widget.adminSigningUp!.teamEmailAddresses!.length + 1),
               _buildBreakdownItem('Price per Email', '\$5.00'),
               _buildBreakdownItem('Subscription Duration', '1 month'),
               _buildBreakdownItem('Renewal Date',
@@ -124,19 +124,38 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     setState(() {
       _isLoading = true;
     });
+    // await Purchases.setLogLevel(LogLevel.debug);
+
+    // PurchasesConfiguration? configuration;
+
+    // if (Platform.isAndroid){
+    //   // configure for Google Play Store
+    // } else if (Platform.isIOS){
+    //   configuration = PurchasesConfiguration("appl_iTxQScKUYowxqRYgHvJbUnAAgKm");
+    // }
+
+    // if (configuration != null){
+    //   await Purchases.configure(configuration);
+
+    //   final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("team_subscription");
+    //   print('Paywall result: $paywallResult');
+    //   log('Paywall result: $paywallResult');
+    // }
+
+    // Get fcm_token for push notiifcations
     final firebaseMessage = FirebaseMessaging.instance;
     await firebaseMessage.requestPermission();
     final fcmToken = await firebaseMessage.getToken();
-    
 
     var body = {
-      "name": FirebaseAuth.instance.currentUser!.displayName,
-      "email": FirebaseAuth.instance.currentUser!.email,
-      "uid": FirebaseAuth.instance.currentUser!.uid,
-      "team_name": _teamName,
-      "team_members": _receivedEmailAddresses.toString(),
+      "name": widget.adminSigningUp!.displayName,
+      "email": widget.adminSigningUp!.email,
+      "password": widget.adminSigningUp!.password,
+      "team_name": widget.adminSigningUp!.teamName,
+      "team_members": widget.adminSigningUp!.teamEmailAddresses!.toString(),
       "fcm_token": fcmToken,
     };
+
     http.Response response = await http.post(
         Uri.parse("${globals.END_POINT}/sign_up/admin/complete_purchase"),
         body: body);
@@ -145,14 +164,27 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
       Map<String, dynamic> data = jsonDecode(response.body);
       const storage = FlutterSecureStorage();
       await storage.write(key: globals.FSS_TEAM_ID, value: data['team_ID']);
-      await storage.write(key: globals.FSS_TEAM_NAME, value: _teamName);
+      await storage.write(
+          key: globals.FSS_TEAM_NAME, value: widget.adminSigningUp!.teamName);
       await storage.write(key: globals.FSS_NEW_ACCOUNT, value: 'true');
-
-      if (context.mounted) {
-        Navigator.pushNamed(context, '/home');
+    }
+    if (context.mounted) {
+      // Sign in to Firebase first
+      try {
+        FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: widget.adminSigningUp!.email,
+                password: widget.adminSigningUp!.password)
+            .then((value) async {
+          // Sign in successful
+          Navigator.pushNamed(context, '/home');
+        });
+      } on FirebaseException catch (e) {
+        print('Firebase error: ${e.message}');
       }
     }
-    if(context.mounted) {
+
+    if (context.mounted) {
       setState(() {
         _isLoading = false;
       });

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:thesalesgong/data_classes/admin_signing_up.dart';
+import 'package:thesalesgong/login/admin_signup/admin_payment_page.dart';
 
 class AddTeamMembersPage extends StatefulWidget {
-  const AddTeamMembersPage({Key? key}) : super(key: key);
+  final AdminSigningUp? adminSigningUp;
+
+  const AddTeamMembersPage({super.key, this.adminSigningUp});
 
   @override
   State<AddTeamMembersPage> createState() => _AddTeamMembersPageState();
@@ -12,12 +16,9 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
   final List<String> _emailAddresses = [];
 
   final TextEditingController _emailController = TextEditingController();
-  late String _teamName;
 
   @override
   Widget build(BuildContext context) {
-    final String args = ModalRoute.of(context)!.settings.arguments as String;
-    _teamName = args;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Team Members'),
@@ -144,8 +145,16 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
         ),
       );
     } else {
-      Navigator.pushNamed(context, '/admin_payment',
-          arguments: {'emailAddresses': _emailAddresses, 'teamName': _teamName});
+      // Email addresses are valid
+      AdminSigningUp adminSigningUp = widget.adminSigningUp!.copyWith(
+        teamEmailAddresses: _emailAddresses,
+      );
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  AdminPaymentPage(adminSigningUp: adminSigningUp)));
     }
   }
 }

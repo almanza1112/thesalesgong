@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:thesalesgong/data_classes/admin_signing_up.dart';
 import 'package:thesalesgong/globals.dart' as globals;
+import 'package:thesalesgong/login/admin_signup/add_team_name_page.dart';
 
 class AdminSignupPage extends StatefulWidget {
-  const AdminSignupPage({Key? key}) : super(key: key);
+  const AdminSignupPage({super.key});
 
   @override
   State<AdminSignupPage> createState() => _AdminSignupPageState();
@@ -168,7 +169,9 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
                             foregroundColor: Colors.white,
                             shape: const StadiumBorder()),
                         onPressed: _isLoading ? null : createAccount,
-                        child: _isLoading ? const CircularProgressIndicator() : const Text("CREATE ACCOUNT"),
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text("CREATE ACCOUNT"),
                       ),
                       const SizedBox(height: 8),
                     ],
@@ -190,54 +193,43 @@ class _AdminSignupPageState extends State<AdminSignupPage> {
       setState(() {
         _isLoading = true;
       });
-      var body = {
-        "name": _nameController.text.trim(),
-        "email": _emailController.text.trim(),
-        "password": _passwordController.text,
-      };
 
-      http.Response response = await http
-          .post(Uri.parse("${globals.END_POINT}/sign_up/admin"), body: body);
+      http.Response response = await http.get(Uri.parse(
+          "${globals.END_POINT}/sign_up/email_check?email=${_emailController.text.trim()}"));
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         // Successully created new user
         Map<String, dynamic> data = jsonDecode(response.body);
-        if (data['result'] == 'success' && context.mounted) {
-          // Sign into Firebase and then navigate to add team members page
-          try {
-            FirebaseAuth.instance
-                .signInWithEmailAndPassword(
-                    email: _emailController.text.trim(),
-                    password: _passwordController.text)
-                .then((value) =>
-                    Navigator.pushNamed(context, '/add_team_name'));
-          } on FirebaseAuthException catch (e) {
-            if (e.code == 'user-not-found') {
-              print('No user found for that email.');
-            } else if (e.code == 'wrong-password') {
-              print('Wrong password provided for that user.');
-            }
-          }
+        if (data['result'] == 'success') {
+          AdminSigningUp adminSigningUp = AdminSigningUp(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            displayName: _nameController.text.trim(),
+          );
+          if (!mounted) return;
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AddTeamNamePage(adminSigningUp: adminSigningUp)));
         }
       } else if (response.statusCode == 409) {
-        // errorInfo.code : "auth/email-already-exists" <-- this is from server
-        // Error creating new user: The email address is already in use by another account.
+        // Email already exists or email is improperly formatted
         Map<String, dynamic> data = jsonDecode(response.body);
-        if (data['message'] == 'auth/email-already-exists') {
+        if (data['message'] == 'Email exists') {
           setState(() {
             _emailErrorText = "Email is already in use";
           });
-        } else if(data['message'] == 'auth/invalid-email'){
+        } else if (data['message'] == 'auth/invalid-email') {
           setState(() {
             _emailErrorText = "Email address is improperly formatted";
           });
         }
       } else {
         // Error creating new user
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Error creating new user")));
-        }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Error creating new user")));
       }
 
       setState(() {

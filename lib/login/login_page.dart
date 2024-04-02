@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thesalesgong/globals.dart' as globals;
@@ -26,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: SafeArea(
         child: Container(
-          padding: const  EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -99,9 +101,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void login() {
+  void login() async {
     final String email = _emailController.text;
     final String password = _passwordController.text;
+
+    // Get fcm_token for push notiifcations
+    final firebaseMessage = FirebaseMessaging.instance;
+    await firebaseMessage.requestPermission();
+    final fcmToken = await firebaseMessage.getToken();
 
     FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password)
@@ -121,12 +128,21 @@ class _LoginPageState extends State<LoginPage> {
               key: globals.FSS_TEAM_ID, value: documentSnapshot.get('team_ID'));
 
           // store the gong tone
-          await storage.write(key: globals.FSS_GONG_TONE, value: documentSnapshot.get('notification_sound'));
+          await storage.write(
+              key: globals.FSS_GONG_TONE,
+              value: documentSnapshot.get('notification_sound'));
           await storage.write(
               key: globals.FSS_ALLOW_GONG_ALERTS, value: 'Always');
 
           if (context.mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
+            // Update the fcm_token in firestore
+            FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .update({'fcm_token': fcmToken}).then((v) {
+              // success, sign in
+              Navigator.of(context).pushReplacementNamed('/home');
+            });
           }
         } else {
           setState(() {

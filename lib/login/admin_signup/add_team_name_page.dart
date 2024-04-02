@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:thesalesgong/data_classes/admin_signing_up.dart';
+import 'package:thesalesgong/login/admin_signup/add_team_members_page.dart';
 
 class AddTeamNamePage extends StatefulWidget {
-  const AddTeamNamePage({Key? key}) : super(key: key);
+  final AdminSigningUp? adminSigningUp;
+  const AddTeamNamePage({super.key, this.adminSigningUp});
 
   @override
   State<AddTeamNamePage> createState() => _AddTeamNamePageState();
@@ -19,7 +22,15 @@ class _AddTeamNamePageState extends State<AddTeamNamePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_formKey.currentState!.validate()) {
-            Navigator.pushNamed(context, '/add_team_members', arguments: _teamNameController.text.trim());
+            AdminSigningUp adminSigningUp = widget.adminSigningUp!.copyWith(
+              teamName: _teamNameController.text.trim(),
+            );
+
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        AddTeamMembersPage(adminSigningUp: adminSigningUp)));
           }
         },
         child: const Icon(Icons.arrow_forward),
@@ -37,7 +48,7 @@ class _AddTeamNamePageState extends State<AddTeamNamePage> {
                   //keyboardType: TextInputType.name,
                   textCapitalization: TextCapitalization.words,
                   autocorrect: true,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Team Name',
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     prefixIcon: const Icon(

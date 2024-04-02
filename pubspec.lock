@@ -357,6 +357,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   http:
     dependency: "direct main"
     description:
@@ -389,6 +397,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.8.1"
   leak_tracker:
     dependency: transitive
     description:
@@ -517,6 +533,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  purchases_flutter:
+    dependency: "direct main"
+    description:
+      name: purchases_flutter
+      sha256: "5791321994934c265f9a178c69a329e0f7c21b1975b1e40abfadfa1a3f07cd8a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.24.0"
+  purchases_ui_flutter:
+    dependency: "direct main"
+    description:
+      name: purchases_ui_flutter
+      sha256: "1547bf43eef96b2f562d519e5619572e17cf706a342a64920519e2092a3ba5e7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.24.0"
   sky_engine:
     dependency: transitive
     description: flutter
