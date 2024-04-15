@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -232,14 +234,26 @@ class _HomePageState extends State<HomePage> {
           _isLoading = false;
         });
         _messageController.clear();
+              Map<String, dynamic> data = jsonDecode(response.body);
+
+        print(data);
+
+        final successMessage = data['message'];
         if (context.mounted) {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const NotificationsPage(
+                  builder: (context) => NotificationsPage(
                         wasGongHit: true,
+                        successMessage: successMessage,
                       )));
         }
+      } else if (response.statusCode == 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No other team members to notify'),
+          ),
+        );
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -263,18 +277,18 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.zero,
       children: [
         UserAccountsDrawerHeader(
-          accountName: Text(FirebaseAuth.instance.currentUser!.displayName!),
-          accountEmail: Text(FirebaseAuth.instance.currentUser!.email!),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color.fromRGBO(30, 58, 138, 1),
-                Color.fromRGBO(79, 70, 229, 1)
-              ],
-            ),)
-        ),
+            accountName: Text(FirebaseAuth.instance.currentUser!.displayName!),
+            accountEmail: Text(FirebaseAuth.instance.currentUser!.email!),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color.fromRGBO(30, 58, 138, 1),
+                  Color.fromRGBO(79, 70, 229, 1)
+                ],
+              ),
+            )),
         ListTile(
           title: const Text('Team'),
           onTap: () async {

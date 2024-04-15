@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,7 +5,8 @@ import 'package:thesalesgong/globals.dart' as globals;
 
 class NotificationsPage extends StatefulWidget {
   final bool? wasGongHit;
-  const NotificationsPage({super.key, this.wasGongHit});
+  final String? successMessage;
+  const NotificationsPage({super.key, this.wasGongHit, this.successMessage});
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
@@ -43,7 +42,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    String saying = getRandomMotivationalSaying();
 
     return Scaffold(
       appBar: AppBar(
@@ -133,12 +131,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         child: Container(
                           color: Colors.white.withOpacity(0.8),
                           child: Center(
-                            child: Text(
-                              saying,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                widget.successMessage!,
+                                
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -176,22 +178,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return (number < 10) ? '0$number' : '$number';
   }
 
-// Helper function to convert hour to 12-hour format
+  // Helper function to convert hour to 12-hour format
   int _getHourIn12HourFormat(int hour) {
     return (hour > 12) ? hour - 12 : hour;
-  }
-
-  String getRandomMotivationalSaying() {
-    List<String> sayings = [
-      "Nice job!",
-      "You can do it!",
-      "Keep up the good work!",
-      "Believe in yourself!",
-      "Stay motivated!",
-      "Never give up!",
-    ];
-
-    return sayings[Random().nextInt(sayings.length)];
   }
   
 }

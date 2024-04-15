@@ -24,10 +24,7 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
@@ -51,6 +48,14 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDRwcPIx07gH490m5sMhPpvr0Qmp74_vvU',
+    appId: '1:941863865788:android:e80ccf3c554060f59c6fb9',
+    messagingSenderId: '941863865788',
+    projectId: 'the-sales-gong',
+    storageBucket: 'the-sales-gong.appspot.com',
+  );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCZPm0OznCAzPcmxbj7uVOPwn-LeD34LWg',

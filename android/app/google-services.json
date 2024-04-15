@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:941863865788:android:cd9dc9152912f42b9c6fb9",
+        "mobilesdk_app_id": "1:941863865788:android:e80ccf3c554060f59c6fb9",
         "android_client_info": {
-          "package_name": "com.example.thesalesgong"
+          "package_name": "com.gong.thesales"
         }
       },
       "oauth_client": [],
