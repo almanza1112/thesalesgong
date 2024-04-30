@@ -37,8 +37,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // //       body: message.notification!.body,
 // //   )
 // // );
-  print('onBackgroundMessage called');
-  print("Handling a background message: ${message.notification?.android?.channelId}");
  }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

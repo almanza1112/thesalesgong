@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:thesalesgong/data_classes/team_members.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
@@ -14,6 +17,7 @@ class TeamPage extends StatefulWidget {
 
 class _TeamPageState extends State<TeamPage> {
   final storage = const FlutterSecureStorage();
+    final firestore = FirebaseFirestore.instance;
 
   String teamName = '';
   final TextEditingController _emailController = TextEditingController();
@@ -33,7 +37,6 @@ class _TeamPageState extends State<TeamPage> {
 
   @override
   Widget build(BuildContext context) {
-    final firestore = FirebaseFirestore.instance;
 
     return Scaffold(
         appBar: AppBar(
