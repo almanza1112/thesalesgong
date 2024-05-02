@@ -324,11 +324,17 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
                   password: _passwordController.text)
               .then((value) async {
             const storage = FlutterSecureStorage();
+
             await storage.write(
                 key: globals.FSS_TEAM_ID, value: _teamIdController.text);
+
             await storage.write(key: globals.FSS_NEW_ACCOUNT, value: 'true');
+
             await storage.write(
                 key: globals.FSS_TEAM_NAME, value: data['team_name']);
+
+            await storage.write(
+                key: globals.FSS_ROLE, value: globals.FSS_TEAM_MEMBER);
             if (context.mounted) {
               Navigator.pushNamed(context, '/home');
             }

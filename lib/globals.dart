@@ -9,6 +9,9 @@ String END_POINT = "https://the-sales-gong-api.onrender.com"; // for when deploy
 String FSS_TEAM_ID = 'team_id';
 String FSS_TEAM_NAME = 'team_name';
 String FSS_NEW_ACCOUNT = 'new_account';
+String FSS_ROLE = 'role';
+String FSS_ADMIN = 'admin';
+String FSS_TEAM_MEMBER = 'team_member';
 
 // Notifications settings
 String FSS_GONG_TONE = 'gong_tone';

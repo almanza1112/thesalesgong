@@ -173,6 +173,8 @@ class _LoginPageState extends State<LoginPage> {
           // User document exists, save team_ID to FlutterSecureStorage
           const storage = FlutterSecureStorage();
 
+          // TODO: need to store the team name as well
+
           // store the user's team_ID in FlutterSecureStorage
           await storage.write(
               key: globals.FSS_TEAM_ID, value: documentSnapshot.get('team_ID'));
@@ -181,8 +183,13 @@ class _LoginPageState extends State<LoginPage> {
           await storage.write(
               key: globals.FSS_GONG_TONE,
               value: documentSnapshot.get('notification_sound'));
+
           await storage.write(
               key: globals.FSS_ALLOW_GONG_ALERTS, value: 'Always');
+
+          // store the users role 
+          await storage.write(
+              key: globals.FSS_ROLE, value: documentSnapshot.get('role'));
 
           if (context.mounted) {
             // Update the fcm_token in firestore

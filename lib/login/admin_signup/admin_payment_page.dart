@@ -200,6 +200,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                 key: globals.FSS_TEAM_NAME,
                 value: widget.adminSigningUp!.teamName);
             await storage.write(key: globals.FSS_NEW_ACCOUNT, value: 'true');
+
+            await storage.write(key: globals.FSS_ROLE, value: globals.FSS_ADMIN);
           }
           if (context.mounted) {
             // Sign in to Firebase first
