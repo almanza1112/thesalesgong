@@ -8,6 +8,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:thesalesgong/data_classes/team_members.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
+import 'package:thesalesgong/menu/team/add_team_member_page.dart';
 
 class TeamPage extends StatefulWidget {
   final String? teamId;
@@ -61,8 +62,15 @@ class _TeamPageState extends State<TeamPage> {
             // Make sure only the admin can add new team members
             if (role == globals.FSS_ADMIN)
               IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: addTeamMember,
+                icon: const Icon(Icons.person_add),
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTeamMemberPage(teamId: widget.teamId, teamName: teamName),
+                    ),
+                  );
+                },
               ),
           ],
         ),

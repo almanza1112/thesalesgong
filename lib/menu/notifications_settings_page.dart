@@ -85,6 +85,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               value: '1',
               groupValue: selectedGongTone,
               onChanged: (value) => updateGong(value),
+              
             ),
             RadioListTile<String>(
               activeColor: Colors.white,
@@ -100,130 +101,137 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               groupValue: selectedGongTone,
               onChanged: (value) => updateGong(value),
             ),
-            const SizedBox(height: 24),
-            // Allow Gong Alerts section
-            ListTile(
-              title: Text('ALLOW GONG ALERTS', style: sectionTitleStyle),
-            ),
-            RadioListTile<String>(
-              activeColor: Colors.white,
-              title: Text('Always', style: gongTextStyle),
-              value: 'Always',
-              groupValue: allowGongAlerts,
-              onChanged: (value) async {
-                await storage.write(
-                    key: globals.FSS_ALLOW_GONG_ALERTS, value: value!);
-                setState(() {
-                  allowGongAlerts = value;
-                });
-              },
-            ),
-            RadioListTile<String>(
-              activeColor: Colors.white,
-              title: Text('Business Hours', style: gongTextStyle),
-              value: 'Business Hours',
-              groupValue: allowGongAlerts,
-              onChanged: (value) async {
-                await storage.write(
-                    key: globals.FSS_ALLOW_GONG_ALERTS, value: value!);
-                setState(() {
-                  allowGongAlerts = value;
-                });
-              },
-            ),
-            RadioListTile<String>(
-              activeColor: Colors.white,
-              title: Text('Custom', style: gongTextStyle),
-              value: 'Custom',
-              groupValue: allowGongAlerts,
-              secondary: TextButton(
-                onPressed: () {
-                  if (allowGongAlerts == 'Custom') {
-                    Navigator.pushNamed(context, '/custom_alert_times');
-                  }
-                },
-                child: Text(
-                  'EDIT TIMES',
-                  style: TextStyle(
-                      color: allowGongAlerts == 'Custom'
-                          ? const Color.fromRGBO(34, 197, 94, 1)
-                          : Colors.grey),
-                ),
-              ),
-              onChanged: (value) async {
-                await storage.write(
-                    key: globals.FSS_ALLOW_GONG_ALERTS, value: value!);
-
-                if (await storage.read(
-                        key: globals.FSS_MONDAY_STARTTIME_HOUR) ==
-                    null) {
-                  // User has not set custom times yet
-                  // Proceed to set custom times, 9:00 AM - 5:00 PM
-                  await storage.write(
-                      key: globals.FSS_MONDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_MONDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_MONDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_MONDAY_ENDTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_TUESDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_TUESDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_TUESDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_TUESDAY_ENDTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_WEDNESDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_WEDNESDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_WEDNESDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_WEDNESDAY_ENDTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_THURSDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_THURSDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_THURSDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_THURSDAY_ENDTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_FRIDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_FRIDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_FRIDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_FRIDAY_ENDTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_SATURDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_SATURDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_SATURDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_SATURDAY_ENDTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_SUNDAY_STARTTIME_HOUR, value: '09');
-                  await storage.write(
-                      key: globals.FSS_SUNDAY_STARTTIME_MINUTE, value: '00');
-                  await storage.write(
-                      key: globals.FSS_SUNDAY_ENDTIME_HOUR, value: '17');
-                  await storage.write(
-                      key: globals.FSS_SUNDAY_ENDTIME_MINUTE, value: '00');
-                }
-                setState(() {
-                  allowGongAlerts = value;
-                });
-              },
-            ),
+            //const SizedBox(height: 24),
+            //_allowGoneAlerts()
           ],
         ),
       ),
+    );
+  }
+
+  Widget _allowGoneAlerts() {
+    return Column(
+      children: [
+        // Allow Gong Alerts section
+        ListTile(
+          title: Text('ALLOW GONG ALERTS', style: sectionTitleStyle),
+        ),
+        RadioListTile<String>(
+          activeColor: Colors.white,
+          title: Text('Always', style: gongTextStyle),
+          value: 'Always',
+          groupValue: allowGongAlerts,
+          onChanged: (value) async {
+            await storage.write(
+                key: globals.FSS_ALLOW_GONG_ALERTS, value: value!);
+            setState(() {
+              allowGongAlerts = value;
+            });
+          },
+        ),
+        RadioListTile<String>(
+          activeColor: Colors.white,
+          title: Text('Business Hours', style: gongTextStyle),
+          value: 'Business Hours',
+          groupValue: allowGongAlerts,
+          onChanged: (value) async {
+            await storage.write(
+                key: globals.FSS_ALLOW_GONG_ALERTS, value: value!);
+            setState(() {
+              allowGongAlerts = value;
+            });
+          },
+        ),
+        RadioListTile<String>(
+          activeColor: Colors.white,
+          title: Text('Custom', style: gongTextStyle),
+          value: 'Custom',
+          groupValue: allowGongAlerts,
+          secondary: TextButton(
+            onPressed: () {
+              if (allowGongAlerts == 'Custom') {
+                Navigator.pushNamed(context, '/custom_alert_times');
+              }
+            },
+            child: Text(
+              'EDIT TIMES',
+              style: TextStyle(
+                  color: allowGongAlerts == 'Custom'
+                      ? const Color.fromRGBO(34, 197, 94, 1)
+                      : Colors.grey),
+            ),
+          ),
+          onChanged: (value) async {
+            await storage.write(
+                key: globals.FSS_ALLOW_GONG_ALERTS, value: value!);
+
+            if (await storage.read(key: globals.FSS_MONDAY_STARTTIME_HOUR) ==
+                null) {
+              // User has not set custom times yet
+              // Proceed to set custom times, 9:00 AM - 5:00 PM
+              await storage.write(
+                  key: globals.FSS_MONDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_MONDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_MONDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_MONDAY_ENDTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_TUESDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_TUESDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_TUESDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_TUESDAY_ENDTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_WEDNESDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_WEDNESDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_WEDNESDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_WEDNESDAY_ENDTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_THURSDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_THURSDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_THURSDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_THURSDAY_ENDTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_FRIDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_FRIDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_FRIDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_FRIDAY_ENDTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_SATURDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_SATURDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_SATURDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_SATURDAY_ENDTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_SUNDAY_STARTTIME_HOUR, value: '09');
+              await storage.write(
+                  key: globals.FSS_SUNDAY_STARTTIME_MINUTE, value: '00');
+              await storage.write(
+                  key: globals.FSS_SUNDAY_ENDTIME_HOUR, value: '17');
+              await storage.write(
+                  key: globals.FSS_SUNDAY_ENDTIME_MINUTE, value: '00');
+            }
+            setState(() {
+              allowGongAlerts = value;
+            });
+          },
+        ),
+      ],
     );
   }
 

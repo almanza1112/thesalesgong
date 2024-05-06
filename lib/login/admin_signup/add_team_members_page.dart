@@ -91,7 +91,7 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
                   Navigator.of(context).pop(); // Close the dialog
                   _addEmailAddress(_emailController.text);
                 },
-                child: const Text('ADD', style: TextStyle(color: Colors.blue)),
+                child: const Text('ADD'),
               ),
             ],
           ),

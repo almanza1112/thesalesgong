@@ -173,11 +173,13 @@ class _LoginPageState extends State<LoginPage> {
           // User document exists, save team_ID to FlutterSecureStorage
           const storage = FlutterSecureStorage();
 
-          // TODO: need to store the team name as well
-
           // store the user's team_ID in FlutterSecureStorage
           await storage.write(
               key: globals.FSS_TEAM_ID, value: documentSnapshot.get('team_ID'));
+
+          // store the user's team name in FlutterSecureStorage
+          await storage.write(
+              key: globals.FSS_TEAM_NAME, value: documentSnapshot.get('team_name'));
 
           // store the gong tone
           await storage.write(

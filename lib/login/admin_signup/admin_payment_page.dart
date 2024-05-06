@@ -74,8 +74,10 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                     widget.adminSigningUp!.teamEmailAddresses!.length + 1),
                 _buildBreakdownItem('Price per Email', '\$5.00'),
                 _buildBreakdownItem('Subscription Duration', '1 month'),
-                _buildBreakdownItem('Renewal Date',
-                    DateFormat('MM/dd/yyyy').format(expirationDate)),
+                // Removing the renewal date for now
+                // TODO: add this back in the future when you find out how in-app purchases determines a month durantion for subscriptions
+                // _buildBreakdownItem('Renewal Date',
+                //     DateFormat('MM/dd/yyyy').format(expirationDate)),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
@@ -161,17 +163,17 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
     if (configuration != null) {
       await Purchases.configure(configuration);
 
-      final totalTeamMembers = widget.adminSigningUp!.teamEmailAddresses!.length + 1;
+      final totalTeamMembers =
+          widget.adminSigningUp!.teamEmailAddresses!.length + 1;
 
-      List<StoreProduct> productList =
-          await Purchases.getProducts(["thesalesgong_${totalTeamMembers}_person_team_sub"]);
+      List<StoreProduct> productList = await Purchases.getProducts(
+          ["thesalesgong_${totalTeamMembers}_person_team_sub"]);
       try {
         CustomerInfo paywallResult =
             await Purchases.purchaseStoreProduct(productList.first);
 
         // Purchase was made succesfully and entitlements are active
         if (paywallResult.entitlements.active.values.first.isActive) {
-
           // Get fcm_token for push notiifcations
           final firebaseMessage = FirebaseMessaging.instance;
           await firebaseMessage.requestPermission();
@@ -201,7 +203,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                 value: widget.adminSigningUp!.teamName);
             await storage.write(key: globals.FSS_NEW_ACCOUNT, value: 'true');
 
-            await storage.write(key: globals.FSS_ROLE, value: globals.FSS_ADMIN);
+            await storage.write(
+                key: globals.FSS_ROLE, value: globals.FSS_ADMIN);
           }
           if (context.mounted) {
             // Sign in to Firebase first

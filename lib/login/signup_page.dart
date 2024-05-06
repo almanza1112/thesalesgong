@@ -33,41 +33,52 @@ class SignupPage extends StatelessWidget {
             ],
           ),
         ),
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
+            SizedBox(
+              height: 150,
+              width: 150,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(0),
                     backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
                     foregroundColor: Colors.white,
-                    shape: const StadiumBorder()),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/admin_signup');
-                },
-                child: const Text("ADMIN"),
-              ),
+                    shape: const CircleBorder(
+                        side: BorderSide(
+                            color: Color.fromRGBO(34, 197, 94, 1), width: 1)),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/admin_signup');
+                  },
+                  child: const Text("ADMIN"),
+                ),
             ),
+            
             const SizedBox(
-              height: 10,
+              width: 16,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
+
+            SizedBox(
+              height: 150,
+              width: 150,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(36),
                     backgroundColor: const Color.fromRGBO(34, 197, 94, 1),
                     foregroundColor: Colors.white,
-                    shape: const StadiumBorder()),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/team_member_signup');
-                },
-                child: const Text("TEAM MEMBER"),
-              ),
+                    shape: const CircleBorder(
+                        side: BorderSide(
+                            color: Color.fromRGBO(34, 197, 94, 1), width: 1)),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/team_member_signup');
+                  },
+                  child: const Text("TEAM MEMBER", textAlign: TextAlign.center,),
+                ),
             ),
+            
           ],
         ),
       ),

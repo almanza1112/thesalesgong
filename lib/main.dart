@@ -16,7 +16,7 @@ import 'package:thesalesgong/menu/email_page.dart';
 import 'package:thesalesgong/menu/name_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
 import 'package:thesalesgong/menu/password_page.dart';
-import 'package:thesalesgong/menu/team_settings_page.dart';
+import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:thesalesgong/services/notification_controller.dart';

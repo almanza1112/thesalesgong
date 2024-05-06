@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
-import 'package:thesalesgong/menu/team_settings_page.dart';
+import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 
 class HomePage extends StatefulWidget {
