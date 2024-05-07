@@ -23,6 +23,8 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
 
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
+  bool _isDialogLoading = false;
+  String? _emailErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,8 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.blue),
                       shape: const StadiumBorder()),
-                  onPressed: _updateTeamMembers,
+                  //onPressed: _updateTeamMembers,
+                  onPressed: () => _addEmailAddresstoDB(_emailAddresses),
                   child: _isLoading
                       ? const CircularProgressIndicator()
                       : const Text('UPDATE'),
@@ -100,29 +103,77 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add Email Address'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email Address'),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  _addEmailAddress(_emailController.text);
-                },
-                child: const Text('ADD'),
-              ),
-            ],
-          ),
-        );
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Add Email Address'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                      labelText: 'Email Address', errorText: _emailErrorText),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _isDialogLoading = true;
+                      _emailErrorText = null;
+                    });
+                    var body = {"email": _emailController.text};
+
+                    http.Response response = await http.post(
+                        Uri.parse("${globals.END_POINT}/account/check_email"),
+                        body: body);
+
+                    if (response.statusCode == 201) {
+                      setState(() {
+                        _isDialogLoading = false;
+                      });
+                      Navigator.of(context).pop(); // Close the dialog
+                      _addEmailAddress(_emailController.text);
+                    } else if (response.statusCode == 409) {
+                      setState(() {
+                        print("hji");
+                        _isDialogLoading = false;
+                        _emailErrorText = "Email address already exists";
+                      });
+                    }
+                  },
+                  child: _isDialogLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('ADD'),
+                ),
+              ],
+            ),
+          );
+        });
       },
     );
+  }
+
+  void _checkIfEmailIsUsed() async {
+    var body = {"email": _emailController.text};
+
+    http.Response response = await http.post(
+        Uri.parse("${globals.END_POINT}/account/check_email"),
+        body: body);
+
+    if (response.statusCode == 201) {
+      setState(() {
+        _isDialogLoading = false;
+      });
+      Navigator.of(context).pop(); // Close the dialog
+      _addEmailAddress(_emailController.text);
+    } else if (response.statusCode == 409) {
+      setState(() {
+        print("hji");
+        _isDialogLoading = true;
+        _emailErrorText = "Email address already exists";
+      });
+    }
   }
 
   void _addEmailAddress(String emailAddress) {
@@ -187,11 +238,7 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
     );
   }
 
-  void _updateTeamMembers() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  void _updateTeamMembers() {
     if (_emailAddresses.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -199,6 +246,10 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
         ),
       );
     } else {
+      setState(() {
+        _isLoading = true;
+      });
+
       // Email addresses are valid
       FirebaseFirestore.instance
           .collection("teams")
@@ -232,6 +283,11 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
             if (paywallResult.entitlements.active.values.first.isActive) {
               _addEmailAddresstoDB(_emailAddresses);
             } else {
+              if (context.mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Purchase failed'),
@@ -239,6 +295,11 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
               );
             }
           } on PlatformException catch (e) {
+            if (context.mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
             if (e.code == '1' &&
                 e.details['readable_error_code'] == 'PURCHASE_CANCELLED') {
               // Handle the case where purchase was cancelled
@@ -251,37 +312,36 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
         }
       });
     }
+  }
+
+  void _addEmailAddresstoDB(List<String> emailAddresses) async {
+    print(emailAddresses);
+    var body = {
+      "team_ID": widget.teamId,
+      "emails": emailAddresses.toString(),
+      "team_name": widget.teamName,
+    };
+
+    http.Response response = await http.post(
+        Uri.parse("${globals.END_POINT}/account/add_teammember"),
+        body: body);
+
+    if (response.statusCode == 201) {
+      Navigator.of(context).pop();
+    } else if (response.statusCode == 409) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email address already exists'),
+          ),
+        );
+      }
+    }
 
     if (context.mounted) {
       setState(() {
         _isLoading = false;
       });
-    }
-  }
-
-  void _addEmailAddresstoDB(List<String> emailAddresses) async {
-    if (emailAddresses.isNotEmpty) {
-      var body = {
-        "team_ID": widget.teamId,
-        "emails": emailAddresses,
-        "team_name": widget.teamName,
-      };
-
-      http.Response response = await http.post(
-          Uri.parse("${globals.END_POINT}/account/add_teammember"),
-          body: body);
-
-      if (response.statusCode == 201) {
-        Navigator.of(context).pop(); 
-      } else if (response.statusCode == 409) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Email address already exists'),
-            ),
-          );
-        }
-      }
     }
   }
 }

@@ -2,7 +2,7 @@
 //String END_POINT = 'http://192.168.1.179:3000'; // Devin's house
 //String END_POINT = "http://192.168.0.118:3000"; // for when local testing Bryant's Macbook Pro
 //String END_POINT = "http://192.168.0.198:3000"; // for when local testing Bryant's Mac Mini
-String END_POINT = "http://192.168.1.242:3000"; // Mac mini - Apartment
+String END_POINT = "http://192.168.1.238:3000"; // Mac mini - Apartment
 //String END_POINT = "https://the-sales-gong-api.onrender.com"; // for when deployed
 
 // -----------FLUTTER SECURE STORAGE KEYS-----------
