@@ -85,8 +85,8 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.blue),
                       shape: const StadiumBorder()),
-                  //onPressed: _updateTeamMembers,
-                  onPressed: () => _addEmailAddresstoDB(_emailAddresses),
+                  onPressed: _updateTeamMembers,
+                  //onPressed: () => _addEmailAddresstoDB(_emailAddresses), // for testing, bypassing the purchase
                   child: _isLoading
                       ? const CircularProgressIndicator()
                       : const Text('UPDATE'),
@@ -136,7 +136,6 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
                       _addEmailAddress(_emailController.text);
                     } else if (response.statusCode == 409) {
                       setState(() {
-                        print("hji");
                         _isDialogLoading = false;
                         _emailErrorText = "Email address already exists";
                       });
@@ -152,28 +151,6 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
         });
       },
     );
-  }
-
-  void _checkIfEmailIsUsed() async {
-    var body = {"email": _emailController.text};
-
-    http.Response response = await http.post(
-        Uri.parse("${globals.END_POINT}/account/check_email"),
-        body: body);
-
-    if (response.statusCode == 201) {
-      setState(() {
-        _isDialogLoading = false;
-      });
-      Navigator.of(context).pop(); // Close the dialog
-      _addEmailAddress(_emailController.text);
-    } else if (response.statusCode == 409) {
-      setState(() {
-        print("hji");
-        _isDialogLoading = true;
-        _emailErrorText = "Email address already exists";
-      });
-    }
   }
 
   void _addEmailAddress(String emailAddress) {
@@ -315,7 +292,6 @@ class _AddTeamMemberPageState extends State<AddTeamMemberPage> {
   }
 
   void _addEmailAddresstoDB(List<String> emailAddresses) async {
-    print(emailAddresses);
     var body = {
       "team_ID": widget.teamId,
       "emails": emailAddresses.toString(),

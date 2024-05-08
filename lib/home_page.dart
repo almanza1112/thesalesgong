@@ -327,6 +327,12 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         ListTile(
+          title: const Text('Support'),
+          onTap: () {
+            Navigator.pushNamed(context, '/support');
+          },
+        ),
+        ListTile(
           title: const Text('Logout'),
           onTap: logout,
         ),

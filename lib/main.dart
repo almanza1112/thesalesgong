@@ -16,6 +16,7 @@ import 'package:thesalesgong/menu/email_page.dart';
 import 'package:thesalesgong/menu/name_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
 import 'package:thesalesgong/menu/password_page.dart';
+import 'package:thesalesgong/menu/support_page.dart';
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -143,6 +144,7 @@ class _MyAppState extends State<MyApp> {
         '/email': (context) => const EmailPage(),
         '/password': (context) => const PasswordPage(),
         '/name': (context) => const NamePage(),
+        '/support': (context) => const SupportPage(),
       },
     );
   }
