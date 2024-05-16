@@ -12,10 +12,12 @@ import 'package:thesalesgong/login/opening_page.dart';
 import 'package:thesalesgong/login/signup_page.dart';
 import 'package:thesalesgong/login/team_member_signup_page.dart';
 import 'package:thesalesgong/menu/custom_alerts_times_pages.dart';
+import 'package:thesalesgong/menu/delete_account_page.dart';
 import 'package:thesalesgong/menu/email_page.dart';
 import 'package:thesalesgong/menu/name_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
 import 'package:thesalesgong/menu/password_page.dart';
+import 'package:thesalesgong/menu/subscription_page.dart';
 import 'package:thesalesgong/menu/support_page.dart';
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
@@ -124,6 +126,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'The Sales Gong',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       home: AuthService().handleAuthStateNew(),
       routes: {
@@ -145,6 +148,8 @@ class _MyAppState extends State<MyApp> {
         '/password': (context) => const PasswordPage(),
         '/name': (context) => const NamePage(),
         '/support': (context) => const SupportPage(),
+        '/subscription': (context) => const SubscriptionPage(),
+        '/delete_account': (context) => const DeleteAccountPage(),
       },
     );
   }

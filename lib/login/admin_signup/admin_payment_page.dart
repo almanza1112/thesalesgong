@@ -187,6 +187,7 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             "team_members":
                 widget.adminSigningUp!.teamEmailAddresses!.toString(),
             "fcm_token": fcmToken,
+            "subscription_type": "thesalesgong_${totalTeamMembers}_person_team_sub",
           };
 
           http.Response response = await http.post(

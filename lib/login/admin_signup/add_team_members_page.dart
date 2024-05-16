@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thesalesgong/data_classes/admin_signing_up.dart';
+import 'package:http/http.dart' as http;
+import 'package:thesalesgong/globals.dart' as globals;
 import 'package:thesalesgong/login/admin_signup/admin_payment_page.dart';
 
 class AddTeamMembersPage extends StatefulWidget {
@@ -16,6 +18,8 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
   final List<String> _emailAddresses = [];
 
   final TextEditingController _emailController = TextEditingController();
+  bool _isDialogLoading = false;
+  String? _emailErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -75,27 +79,52 @@ class _AddTeamMembersPageState extends State<AddTeamMembersPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add Email Address'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email Address'),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  _addEmailAddress(_emailController.text);
-                },
-                child: const Text('ADD'),
-              ),
-            ],
-          ),
-        );
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Add Email Address'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                      labelText: 'Email Address', errorText: _emailErrorText),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _isDialogLoading = true;
+                      _emailErrorText = null;
+                    });
+                    var body = {"email": _emailController.text};
+
+                    http.Response response = await http.post(
+                        Uri.parse("${globals.END_POINT}/account/check_email"),
+                        body: body);
+
+                    if (response.statusCode == 201) {
+                      setState(() {
+                        _isDialogLoading = false;
+                      });
+                      Navigator.of(context).pop(); // Close the dialog
+                      _addEmailAddress(_emailController.text);
+                    } else if (response.statusCode == 409) {
+                      setState(() {
+                        _isDialogLoading = false;
+                        _emailErrorText = "Email address already exists";
+                      });
+                    }
+                  },
+                  child: _isDialogLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('ADD'),
+                ),
+              ],
+            ),
+          );
+        });
       },
     );
   }

@@ -62,7 +62,7 @@ class _TeamPageState extends State<TeamPage> {
             // Make sure only the admin can add new team members
             if (role == globals.FSS_ADMIN)
               IconButton(
-                icon: const Icon(Icons.person_add),
+                icon: const Icon(Icons.edit),
                 onPressed: (){
                   Navigator.push(
                     context,

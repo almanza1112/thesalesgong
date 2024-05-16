@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   final storage = const FlutterSecureStorage();
 
   bool _isLoading = false;
+  String? teamID;
+  String? role;
 
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
@@ -64,10 +68,18 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  void _setVariables() async {
+    teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
+    role = await storage.read(key: globals.FSS_ROLE) ?? "";
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     setupInteractedMessage();
-
+    _setVariables();
     super.initState();
   }
 
@@ -217,7 +229,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _isLoading = true;
       });
-      String teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
+
       var body = {
         "message": _messageController.text,
         "uid": FirebaseAuth.instance.currentUser!.uid,
@@ -234,7 +246,7 @@ class _HomePageState extends State<HomePage> {
           _isLoading = false;
         });
         _messageController.clear();
-              Map<String, dynamic> data = jsonDecode(response.body);
+        Map<String, dynamic> data = jsonDecode(response.body);
 
         print(data);
 
@@ -292,7 +304,6 @@ class _HomePageState extends State<HomePage> {
         ListTile(
           title: const Text('Team'),
           onTap: () async {
-            String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
             if (context.mounted) {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return TeamPage(
@@ -330,6 +341,19 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Support'),
           onTap: () {
             Navigator.pushNamed(context, '/support');
+          },
+        ),
+        if(role == globals.FSS_ADMIN)
+        ListTile(
+          title: const Text('Subscription'),
+          onTap: () {
+            Navigator.pushNamed(context, '/subscription');
+          },
+        ),
+        ListTile(
+          title: const Text('Delete Account'),
+          onTap: () {
+            Navigator.pushNamed(context, '/delete_account');
           },
         ),
         ListTile(
