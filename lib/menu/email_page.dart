@@ -17,7 +17,7 @@ class _EmailPageState extends State<EmailPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _confirmEmailController = TextEditingController();
 
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   bool _isLoading = false;
   String? emailErrorText;

@@ -19,6 +19,7 @@ import 'package:thesalesgong/menu/notifications_settings_page.dart';
 import 'package:thesalesgong/menu/password_page.dart';
 import 'package:thesalesgong/menu/subscription_page.dart';
 import 'package:thesalesgong/menu/support_page.dart';
+import 'package:thesalesgong/menu/team/edit_team_name_page.dart';
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -150,6 +151,7 @@ class _MyAppState extends State<MyApp> {
         '/support': (context) => const SupportPage(),
         '/subscription': (context) => const SubscriptionPage(),
         '/delete_account': (context) => const DeleteAccountPage(),
+        '/edit_team_name': (context) => const EditTeamNamePage(),
       },
     );
   }

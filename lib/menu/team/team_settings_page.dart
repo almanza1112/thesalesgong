@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,7 +9,6 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:thesalesgong/data_classes/team_members.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
-import 'package:thesalesgong/menu/team/add_team_member_page.dart';
 
 class TeamPage extends StatefulWidget {
   final String? teamId;
@@ -20,9 +20,13 @@ class TeamPage extends StatefulWidget {
 class _TeamPageState extends State<TeamPage> {
   final storage = const FlutterSecureStorage();
   final firestore = FirebaseFirestore.instance;
+  final loggedInUserEmail = FirebaseAuth.instance.currentUser!.email;
 
   String teamName = '';
-  String role = '';
+  String? role;
+  bool _isDialogLoading = false;
+  String? _emailErrorText;
+
   final TextEditingController _emailController = TextEditingController();
 
   @override
@@ -32,8 +36,8 @@ class _TeamPageState extends State<TeamPage> {
   }
 
   Future<void> _initializeTeamName() async {
-    teamName = await storage.read(key: "team_name") ?? "Team";
-    role = await storage.read(key: globals.FSS_ROLE) ?? "team_member";
+    teamName = await storage.read(key: globals.FSS_TEAM_NAME) ?? "Team";
+    role = await storage.read(key: globals.FSS_ROLE) ?? globals.FSS_TEAM_MEMBER;
     if (mounted) {
       setState(() {});
     }
@@ -63,13 +67,8 @@ class _TeamPageState extends State<TeamPage> {
             if (role == globals.FSS_ADMIN)
               IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddTeamMemberPage(teamId: widget.teamId, teamName: teamName),
-                    ),
-                  );
+                onPressed: () {
+                  Navigator.pushNamed(context, '/edit_team_name');
                 },
               ),
           ],
@@ -136,25 +135,36 @@ class _TeamPageState extends State<TeamPage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: ListTile(
-                          leading: teamMembers[index].role == "team_member"
-                              ? const Icon(Icons.people)
-                              : const Icon(Icons.person),
-                          title: Text(teamMembers[index].email),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(teamMembers[index].name,
-                                  style: teamMembers[index].name ==
-                                          notRegisteredYet
-                                      ? const TextStyle(
-                                          fontStyle: FontStyle.italic)
-                                      : null),
-                              Text(teamMembers[index].role == "team_member"
-                                  ? "Team Member"
-                                  : "Admin"),
-                            ],
-                          ),
-                        ),
+                            leading: teamMembers[index].role ==
+                                    globals.FSS_TEAM_MEMBER
+                                ? const Icon(Icons.people)
+                                : const Icon(Icons.person),
+                            title: Text(teamMembers[index].email),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(teamMembers[index].name,
+                                    style: teamMembers[index].name ==
+                                            notRegisteredYet
+                                        ? const TextStyle(
+                                            fontStyle: FontStyle.italic)
+                                        : null),
+                                Text(teamMembers[index].role ==
+                                        globals.FSS_TEAM_MEMBER
+                                    ? "Team Member"
+                                    : "Admin"),
+                              ],
+                            ),
+                            trailing: role == globals.FSS_ADMIN &&
+                                    loggedInUserEmail !=
+                                        teamMembers[index].email
+                                ? IconButton(
+                                    onPressed: () {
+                                      _editEmail(
+                                          oldEmail: teamMembers[index].email);
+                                    },
+                                    icon: const Icon(Icons.more_vert))
+                                : null),
                       ),
                     );
                   },
@@ -163,6 +173,79 @@ class _TeamPageState extends State<TeamPage> {
             },
           ),
         ));
+  }
+
+  void _editEmail({required String oldEmail}) async {
+    _emailController.text = oldEmail;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Edit Email Address'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                      labelText: 'Email Address', errorText: _emailErrorText),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _isDialogLoading = true;
+                      _emailErrorText = null;
+                    });
+                    var body = {
+                      "old_email": oldEmail,
+                      "new_email": _emailController.text,
+                      "team_ID": widget.teamId,
+                    };
+
+                    http.Response response = await http.post(
+                        Uri.parse(
+                            "${globals.END_POINT}/account/admin/edit_email"),
+                        body: body);
+
+                    if (response.statusCode == 201) {
+                      setState(() {
+                        _isDialogLoading = false;
+                      });
+                      Navigator.of(context).pop(); // Close the dialog
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Email address updated'),
+                        ),
+                      );
+                    } else if (response.statusCode == 409) {
+                      setState(() {
+                        _isDialogLoading = false;
+                        _emailErrorText = "Email address already exists";
+                      });
+                    } else if(response.statusCode == 500) {
+                      setState(() {
+                        _isDialogLoading = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('There was an error updating the email address. Please try again.'),
+                        ),
+                      );
+                    }
+                  },
+                  child: _isDialogLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('UPDATE'),
+                ),
+              ],
+            ),
+          );
+        });
+      },
+    );
   }
 
   void addTeamMember() {

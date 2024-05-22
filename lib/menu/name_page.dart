@@ -13,7 +13,7 @@ class NamePage extends StatefulWidget {
 class _NamePageState extends State<NamePage> {
   final TextEditingController _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
   bool _isLoading = false;
 
   @override
@@ -136,8 +136,8 @@ class _NamePageState extends State<NamePage> {
           body: body);
 
       if (response.statusCode == 201) {
-        await FirebaseAuth.instance.currentUser!
-            .updateDisplayName(_nameController.text);
+        // await FirebaseAuth.instance.currentUser!
+        //     .updateDisplayName(_nameController.text);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
