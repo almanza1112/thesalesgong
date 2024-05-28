@@ -1,9 +1,8 @@
 // End point
-//String END_POINT = 'http://192.168.1.179:3000'; // Devin's house
 //String END_POINT = "http://192.168.0.118:3000"; // for when local testing Bryant's Macbook Pro
 //String END_POINT = "http://192.168.0.198:3000"; // for when local testing Bryant's Mac Mini
-//String END_POINT = "http://192.168.1.247:3000"; // Mac mini - Apartment
-String END_POINT = "https://the-sales-gong-api.onrender.com"; // for when deployed
+String END_POINT = "http://192.168.1.12:3000"; // Mac mini - Apartment
+//String END_POINT = "https://the-sales-gong-api.onrender.com"; // for when deployed
 
 // -----------FLUTTER SECURE STORAGE KEYS-----------
 String FSS_TEAM_ID = 'team_id';

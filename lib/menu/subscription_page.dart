@@ -13,8 +13,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   bool _isUpdateLoading = false;
   bool _isDisableLoading = false;
 
-  TextStyle get _textStyle =>
+  TextStyle get _labelTextStyle =>
       const TextStyle(color: Colors.white, fontSize: 14);
+
+  TextStyle get _resultTextStyle =>
+      const TextStyle(color: Colors.white, fontSize: 16);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,14 +67,32 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 24),
-                        Text(
-                          'Subscription Status: ${data['subscription']["status"]}',
-                          style: _textStyle,
+                        Row(
+                          children: [
+                            Text(
+                              'Subscription Status:',
+                              style: _labelTextStyle,
+                            ),
+                            const Spacer(),
+                            Text(
+                              data['subscription']["status"].toUpperCase(),
+                              style: _resultTextStyle,
+                            )
+                          ],
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          'Subscription Type: ${data['subscription']["type"]}',
-                          style: _textStyle,
+                        Row(
+                          children: [
+                            Text(
+                              'Subscription Type',
+                              style: _labelTextStyle,
+                            ),
+                            const Spacer(),
+                            Text(
+                              "${data['subscription']['total_team_members_allowed']} Person Team Subscription",
+                              style: _resultTextStyle,
+                            )
+                          ],
                         ),
                         const Spacer(),
                         TextButton(

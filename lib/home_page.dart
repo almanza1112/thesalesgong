@@ -9,8 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,8 +22,7 @@ class _HomePageState extends State<HomePage> {
   final storage = const FlutterSecureStorage();
 
   bool _isLoading = false;
-  String? teamID;
-  String? role;
+ 
 
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
@@ -68,18 +65,9 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  void _setVariables() async {
-    teamID = await storage.read(key: globals.FSS_TEAM_ID) ?? "";
-    role = await storage.read(key: globals.FSS_ROLE) ?? "";
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void initState() {
     setupInteractedMessage();
-    _setVariables();
     super.initState();
   }
 
@@ -235,7 +223,7 @@ class _HomePageState extends State<HomePage> {
         "uid": FirebaseAuth.instance.currentUser!.uid,
         "name": FirebaseAuth.instance.currentUser!.displayName!,
         "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
-        "team_ID": teamID
+        "team_ID": await storage.read(key: globals.FSS_TEAM_ID),
       };
 
       http.Response response = await http
@@ -283,7 +271,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget menu() {
+  Widget menu(){
+    //String role =  storage.read(key: globals.FSS_ROLE) as String;
+    //String teamID = storage.read(key: globals.FSS_TEAM_ID) as String;
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -305,9 +295,10 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Team'),
           onTap: () async {
             if (context.mounted) {
+              String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return TeamPage(
-                  teamId: teamID!,
+                  teamId: teamID,
                 );
               }));
             }
@@ -343,13 +334,13 @@ class _HomePageState extends State<HomePage> {
             Navigator.pushNamed(context, '/support');
           },
         ),
-        if(role == globals.FSS_ADMIN)
-        ListTile(
-          title: const Text('Subscription'),
-          onTap: () {
-            Navigator.pushNamed(context, '/subscription');
-          },
-        ),
+        //if (role == globals.FSS_ADMIN)
+          ListTile(
+            title: const Text('Subscription'),
+            onTap: () {
+              Navigator.pushNamed(context, '/subscription');
+            },
+          ),
         ListTile(
           title: const Text('Delete Account'),
           onTap: () {

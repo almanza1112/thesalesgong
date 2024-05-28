@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:thesalesgong/globals.dart' as globals;
+import 'package:thesalesgong/login/opening_page.dart';
 
 class DeleteAccountPage extends StatefulWidget {
   const DeleteAccountPage({super.key});
@@ -68,7 +70,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   const SizedBox(height: 24),
                   Text(
                     role == globals.FSS_ADMIN
-                        ? "You are the admin of this team. Once you delete your account, your team will also be deleted and none of the information will be able to be recovered."
+                        ? "You are the admin of this team. Once you delete your account, your team will also be deleted and none of the information will be able to be recovered. \n\nThis does not mean your subscription is deleted, you will still need to manage your subscription through the App Store."
                         : "Once your account is deleted, you will lose all your data and you will not be able to recover it.",
                     style: const TextStyle(fontSize: 14, color: Colors.white),
                   ),
@@ -113,7 +115,9 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                   setState(() {
                     _isLoading = true;
                   });
-                  var body = {};
+                  var body = {
+                    'uid': FirebaseAuth.instance.currentUser!.uid,
+                  };
 
                   http.Response response = await http.post(
                       Uri.parse("${globals.END_POINT}/account/delete_account"),
@@ -123,6 +127,11 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     setState(() {
                       _isLoading = false;
                     });
+
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                          context, MaterialPageRoute(builder: (context) => const OpeningPage()), (route) => false);
+                    }
                   } else if (response.statusCode == 400) {
                     setState(() {
                       _isLoading = false;

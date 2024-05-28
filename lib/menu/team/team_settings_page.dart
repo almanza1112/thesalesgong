@@ -93,8 +93,11 @@ class _TeamPageState extends State<TeamPage> {
               } else {
                 Map<String, dynamic> team =
                     snapshot.data!.data() as Map<String, dynamic>;
+
                 List registeredTeamMembers = team["registered_team_members"];
                 List emails = team["emails"];
+                int totalTeamMembersAllowed =
+                    team["total_team_members_allowed"];
                 String notRegisteredYet = "Not registered yet";
 
                 List<TeamMember> teamMembers = [];
@@ -119,6 +122,14 @@ class _TeamPageState extends State<TeamPage> {
                       role: "team_member",
                     ));
                   }
+                }
+
+                while (teamMembers.length < totalTeamMembersAllowed) {
+                  teamMembers.add(TeamMember(
+                    email: "",
+                    name: notRegisteredYet,
+                    role: "team_member",
+                  ));
                 }
 
                 return ListView.builder(
@@ -160,8 +171,12 @@ class _TeamPageState extends State<TeamPage> {
                                         teamMembers[index].email
                                 ? IconButton(
                                     onPressed: () {
-                                      _editEmail(
-                                          oldEmail: teamMembers[index].email);
+                                      if (teamMembers[index].email == "") {
+                                        _addEmail();
+                                      } else {
+                                        _editEmail(
+                                            oldEmail: teamMembers[index].email);
+                                      }
                                     },
                                     icon: const Icon(Icons.more_vert))
                                 : null),
@@ -173,6 +188,82 @@ class _TeamPageState extends State<TeamPage> {
             },
           ),
         ));
+  }
+
+  void _addEmail() {
+    _emailController.clear();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add Email Address'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration:
+                        const InputDecoration(labelText: 'Email Address'),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () async {
+                      setState(() {
+                        _isDialogLoading = true;
+                        _emailErrorText = null;
+                      });
+                      var body = {
+                        "new_email": _emailController.text,
+                        "team_ID": widget.teamId,
+                      };
+
+                      http.Response response = await http.post(
+                          Uri.parse(
+                              "${globals.END_POINT}/account/admin/add_email"),
+                          body: body);
+
+                      if (response.statusCode == 201) {
+                        setState(() {
+                          _isDialogLoading = false;
+                        });
+
+                        if (context.mounted) {
+                          Navigator.of(context).pop(); // Close the dialog
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Email address added'),
+                            ),
+                          );
+                        }
+                      } else if (response.statusCode == 409) {
+                        setState(() {
+                          _isDialogLoading = false;
+                          _emailErrorText = "Email address already exists";
+                        });
+                      } else if (response.statusCode == 500) {
+                        setState(() {
+                          _isDialogLoading = false;
+                        });
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'There was an error updating the email address. Please try again.'),
+                            ),
+                          );
+                        }
+                      } // Close the dialog
+                    },
+                    child: const Text('ADD'),
+                  ),
+                ],
+              ),
+            );
+          });
+        });
   }
 
   void _editEmail({required String oldEmail}) async {
@@ -225,13 +316,14 @@ class _TeamPageState extends State<TeamPage> {
                         _isDialogLoading = false;
                         _emailErrorText = "Email address already exists";
                       });
-                    } else if(response.statusCode == 500) {
+                    } else if (response.statusCode == 500) {
                       setState(() {
                         _isDialogLoading = false;
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('There was an error updating the email address. Please try again.'),
+                          content: Text(
+                              'There was an error updating the email address. Please try again.'),
                         ),
                       );
                     }
