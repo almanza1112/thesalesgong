@@ -17,7 +17,8 @@ import 'package:thesalesgong/menu/email_page.dart';
 import 'package:thesalesgong/menu/name_page.dart';
 import 'package:thesalesgong/menu/notifications_settings_page.dart';
 import 'package:thesalesgong/menu/password_page.dart';
-import 'package:thesalesgong/menu/subscription_page.dart';
+import 'package:thesalesgong/menu/subscription/change_subscription_page.dart';
+import 'package:thesalesgong/menu/subscription/subscription_page.dart';
 import 'package:thesalesgong/menu/support_page.dart';
 import 'package:thesalesgong/menu/team/edit_team_name_page.dart';
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
@@ -152,6 +153,7 @@ class _MyAppState extends State<MyApp> {
         '/subscription': (context) => const SubscriptionPage(),
         '/delete_account': (context) => const DeleteAccountPage(),
         '/edit_team_name': (context) => const EditTeamNamePage(),
+        '/change_subscription': (context) => const ChangeSubscriptionPage(),
       },
     );
   }

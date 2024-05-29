@@ -1,8 +1,11 @@
 // End point
 //String END_POINT = "http://192.168.0.118:3000"; // for when local testing Bryant's Macbook Pro
-//String END_POINT = "http://192.168.0.198:3000"; // for when local testing Bryant's Mac Mini
-String END_POINT = "http://192.168.1.12:3000"; // Mac mini - Apartment
+String END_POINT = "http://192.168.0.198:3000"; // for when local testing Bryant's Mac Mini
+//String END_POINT = "http://192.168.1.14:3000"; // Mac mini - Apartment
 //String END_POINT = "https://the-sales-gong-api.onrender.com"; // for when deployed
+
+// --------------REVENUECAT KEYS----------------
+String REVENUECAT_APPLE_KEY = "appl_iTxQScKUYowxqRYgHvJbUnAAgKm";
 
 // -----------FLUTTER SECURE STORAGE KEYS-----------
 String FSS_TEAM_ID = 'team_id';
@@ -12,7 +15,7 @@ String FSS_ROLE = 'role';
 String FSS_ADMIN = 'admin';
 String FSS_TEAM_MEMBER = 'team_member';
 
-// Notifications settings
+// -------------NOTIFICATIONS----------------
 String FSS_GONG_TONE = 'gong_tone';
 String FSS_ALLOW_GONG_ALERTS = 'allow_gong_alerts';
 String FSS_MONDAY_SWITCH = 'monday_switch';
