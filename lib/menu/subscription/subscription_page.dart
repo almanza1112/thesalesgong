@@ -10,8 +10,6 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
-  bool _isChangingLoading = false;
-  bool _isDisableLoading = false;
 
   TextStyle get _changeSubscriptionOptionsStyle =>
       const TextStyle(color: Colors.white, fontSize: 16);
@@ -101,26 +99,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                         TextButton(
                           style: TextButton.styleFrom(
                               padding: const EdgeInsets.all(16),
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              shape: const StadiumBorder()),
-                          onPressed: _disableSubscription,
-                          child: _isDisableLoading
-                              ? const CircularProgressIndicator()
-                              : const Text("DISABLE SUBSCRIPTION"),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(16),
                               backgroundColor:
                                   const Color.fromRGBO(34, 197, 94, 1),
                               foregroundColor: Colors.white,
                               shape: const StadiumBorder()),
                           onPressed: _changeSubscription,
-                          child: _isChangingLoading
-                              ? const CircularProgressIndicator()
-                              : const Text("CHANGE SUBSCRIPTION"),
+                          child: const Text("CHANGE SUBSCRIPTION"),
                         ),
                         const SizedBox(height: 8),
                       ],
@@ -134,6 +118,4 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   void _changeSubscription() async {
     Navigator.pushNamed(context, '/change_subscription');
   }
-
-  void _disableSubscription() {}
 }
