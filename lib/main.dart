@@ -1,4 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:thesalesgong/auth_service.dart';
@@ -42,7 +43,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // //       body: message.notification!.body,
 // //   )
 // // );
- }
+}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -96,7 +97,9 @@ void main() async {
   bool isNotificationAllowed =
       await AwesomeNotifications().isNotificationAllowed();
   if (!isNotificationAllowed) {
-    await AwesomeNotifications().requestPermissionToSendNotifications();
+    if (FirebaseAuth.instance.currentUser != null) {
+      await AwesomeNotifications().requestPermissionToSendNotifications();
+    }
   }
 
   runApp(const MyApp());
@@ -110,7 +113,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     // AwesomeNotifications().setListeners(
