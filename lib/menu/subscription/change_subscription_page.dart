@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:thesalesgong/globals.dart' as globals;
 import 'package:thesalesgong/menu/subscription/remove_team_members_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChangeSubscriptionPage extends StatefulWidget {
   const ChangeSubscriptionPage({super.key});
@@ -113,52 +115,109 @@ class _ChangeSubscriptionPageState extends State<ChangeSubscriptionPage> {
               child: CupertinoScrollbar(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ListView.builder(
-                    itemCount: _teamSizes.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: Colors.grey.withOpacity(0.9)),
-                        ),
-                        color: adjustedTeamSize == index
-                            ? Colors.grey[200]
-                            : Colors.black
-                                .withOpacity(0.2), // Dark color with opacity
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () {
-                            // Check if new change is greater than current team size
-                            if (index + 2 > _currentTeamSize) {
-                              // It is greater
-                              // Update subscription
-                              _updateSubscription(index + 2);
-                            } else if (index + 2 == _currentTeamSize) {
-                              // It is the selected tile, do NOTHING
-                            } else {
-                              // It is less than, the user must remove team members
-                              _checkForTeamMembersRemoval(index + 2);
-                            }
-                          },
-                          child: ListTile(
-                            title: Text(
-                              _teamSizes[index],
-                              style: adjustedTeamSize == index
-                                  ? _selectedStyle
-                                  : _changeSubscriptionOptionsStyle,
-                            ),
-                            subtitle: Text(
-                              _priceAndDuration[index],
-                              style: adjustedTeamSize == index
-                                  ? _subtitleSelectedStyle
-                                  : _subtitleUnselectedStyle,
-                            ),
+                  child: Column(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
                           ),
+                          children: [
+                            const TextSpan(
+                              text:
+                                  'You can change your subscription below by selecting the number of team members you would like to have. \n\nYou can cancel your subscription at any time from your Apple ID settings. To learn more, visit our ',
+                            ),
+                            TextSpan(
+                              text: 'Terms of Service',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  const url =
+                                      'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
+                                  if (await canLaunchUrl(Uri.parse(url))) {
+                                    await launchUrl(Uri.parse(url));
+                                  }
+                                },
+                            ),
+                            const TextSpan(
+                              text: ' and ',
+                            ),
+                            TextSpan(
+                              text: 'Privacy Policy',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  const url =
+                                      'https://www.freeprivacypolicy.com/live/e28a54d6-def7-4953-bc07-9fd0527b4f31';
+                                  if (await canLaunchUrl(Uri.parse(url))) {
+                                    await launchUrl(Uri.parse(url));
+                                  }
+                                },
+                            ),
+                            const TextSpan(
+                              text: '.\n',
+                            ),
+                          ],
                         ),
-                      );
-                    },
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _teamSizes.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                    color: Colors.grey.withOpacity(0.9)),
+                              ),
+                              color: adjustedTeamSize == index
+                                  ? Colors.grey[200]
+                                  : Colors.black.withOpacity(
+                                      0.2), // Dark color with opacity
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () {
+                                  // Check if new change is greater than current team size
+                                  if (index + 2 > _currentTeamSize) {
+                                    // It is greater
+                                    // Update subscription
+                                    _updateSubscription(index + 2);
+                                  } else if (index + 2 == _currentTeamSize) {
+                                    // It is the selected tile, do NOTHING
+                                  } else {
+                                    // It is less than, the user must remove team members
+                                    _checkForTeamMembersRemoval(index + 2);
+                                  }
+                                },
+                                child: ListTile(
+                                  title: Text(
+                                    _teamSizes[index],
+                                    style: adjustedTeamSize == index
+                                        ? _selectedStyle
+                                        : _changeSubscriptionOptionsStyle,
+                                  ),
+                                  subtitle: Text(
+                                    _priceAndDuration[index],
+                                    style: adjustedTeamSize == index
+                                        ? _subtitleSelectedStyle
+                                        : _subtitleUnselectedStyle,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
