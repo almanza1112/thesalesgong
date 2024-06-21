@@ -22,7 +22,6 @@ class _HomePageState extends State<HomePage> {
   final storage = const FlutterSecureStorage();
 
   bool _isLoading = false;
- 
 
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
@@ -73,6 +72,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // This pop up is shown only once when the user logs in for the first time
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (await storage.read(key: globals.FSS_NEW_ACCOUNT) == "true" &&
           context.mounted) {
@@ -271,9 +271,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget menu(){
-    //String role =  storage.read(key: globals.FSS_ROLE) as String;
-    //String teamID = storage.read(key: globals.FSS_TEAM_ID) as String;
+  Future<String?> getUserRole() async {
+    return await storage.read(key: globals.FSS_ROLE);
+  }
+
+  Widget menu() {
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -294,14 +296,15 @@ class _HomePageState extends State<HomePage> {
         ListTile(
           title: const Text('Team'),
           onTap: () async {
-            if (context.mounted) {
               String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
+              
+              if(!mounted) return;
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return TeamPage(
                   teamId: teamID,
                 );
               }));
-            }
+            
           },
         ),
         ListTile(
@@ -334,13 +337,30 @@ class _HomePageState extends State<HomePage> {
             Navigator.pushNamed(context, '/support');
           },
         ),
-        //if (role == globals.FSS_ADMIN)
-          ListTile(
-            title: const Text('Subscription'),
-            onTap: () {
-              Navigator.pushNamed(context, '/subscription');
-            },
-          ),
+        // Determine if the user is an admin so that the subscription menu item can be shown
+        FutureBuilder<String?>(
+          future: getUserRole(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const ListTile(
+                title: Text('Loading...'),
+              );
+            } else if (snapshot.hasError) {
+              return const ListTile(
+                title: Text('Error loading user role'),
+              );
+            } else if (snapshot.hasData && snapshot.data == globals.FSS_ADMIN) {
+              return ListTile(
+                title: const Text('Subscription'),
+                onTap: () {
+                  Navigator.pushNamed(context, '/subscription');
+                },
+              );
+            } else {
+              return Container(); // Return an empty container if the user is not an admin
+            }
+          },
+        ),
         ListTile(
           title: const Text('Delete Account'),
           onTap: () {

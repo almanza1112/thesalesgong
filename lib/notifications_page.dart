@@ -15,7 +15,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
   final firestore = FirebaseFirestore.instance;
   final storage = const FlutterSecureStorage();
   String teamId = '';
-  bool _visible = true;
 
   Future<void> _refreshNotifications() async {
     // Add your logic to fetch data from Firestore here
@@ -28,21 +27,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
         teamId = value!;
       });
     });
-
-    Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) {
-        setState(() {
-          _visible = false;
-        });
-      }
-    });
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
@@ -64,31 +53,34 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: teamId.isEmpty
           ? const Center(child: Text('No Gongs yet!'))
           : Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Color.fromRGBO(30, 58, 138, 1),
-                  Color.fromRGBO(79, 70, 229, 1)
-                ],
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color.fromRGBO(30, 58, 138, 1),
+                    Color.fromRGBO(79, 70, 229, 1)
+                  ],
+                ),
               ),
-            ),
-            child: Stack(
+              child: Stack(
                 children: [
                   RefreshIndicator(
                     onRefresh: _refreshNotifications,
                     child: FutureBuilder<DocumentSnapshot>(
                       future: firestore.collection("teams").doc(teamId).get(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
                         } else {
                           final notifications = snapshot.data!.data() as Map;
                           List gongList = notifications["gong_history"];
-            
+
                           // Reverse the list to show the latest notification first
                           gongList = List.from(gongList.reversed);
                           return ListView.builder(
@@ -121,35 +113,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     ),
                   ),
                   if (widget.wasGongHit!)
-                    Visibility(
-                      visible: _visible,
-                      child: Positioned(
-                        top: 0,
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: Container(
-                          color: Colors.white.withOpacity(0.8),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Text(
-                                widget.successMessage!,
-                                
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
+                    SuccessMessageOverlay(
+                      successMessage: widget.successMessage!,
+                    ),
                 ],
               ),
-          ),
+            ),
     );
   }
 
@@ -168,7 +137,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
     // Format the date and time components into a string
     String formattedDateTime =
-        '${_addLeadingZero(month)}/${_addLeadingZero(day)}/${year}\n ${_addLeadingZero(_getHourIn12HourFormat(hour))}:${_addLeadingZero(minute)} $period';
+        '${_addLeadingZero(month)}/${_addLeadingZero(day)}/$year\n ${_addLeadingZero(_getHourIn12HourFormat(hour))}:${_addLeadingZero(minute)} $period';
 
     return formattedDateTime;
   }
@@ -182,5 +151,57 @@ class _NotificationsPageState extends State<NotificationsPage> {
   int _getHourIn12HourFormat(int hour) {
     return (hour > 12) ? hour - 12 : hour;
   }
-  
+}
+
+class SuccessMessageOverlay extends StatefulWidget {
+  final String successMessage;
+
+  const SuccessMessageOverlay({super.key, required this.successMessage});
+
+  @override
+  State<SuccessMessageOverlay> createState() => _SuccessMessageOverlayState();
+}
+
+class _SuccessMessageOverlayState extends State<SuccessMessageOverlay> {
+  bool _visible = true;
+  static const fadeDuration = Duration(milliseconds: 500);
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _visible = false;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: _visible,
+      child: AnimatedOpacity(
+        opacity: _visible ? 1.0 : 0.0,
+        duration: fadeDuration,
+        child: Container(
+          color: Colors.white.withOpacity(0.8),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                widget.successMessage,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
