@@ -24,6 +24,7 @@ class _ChangeSubscriptionPageState extends State<ChangeSubscriptionPage> {
 
   TextStyle get _changeSubscriptionOptionsStyle =>
       const TextStyle(color: Colors.white, fontSize: 16);
+
   TextStyle get _selectedStyle =>
       const TextStyle(color: Colors.black, fontSize: 16);
 
@@ -200,7 +201,9 @@ class _ChangeSubscriptionPageState extends State<ChangeSubscriptionPage> {
                                 },
                                 child: ListTile(
                                   title: Text(
-                                    _teamSizes[index],
+                                    index == 18
+                                        ? "Unlimited Team Subscription"
+                                        : _teamSizes[index],
                                     style: adjustedTeamSize == index
                                         ? _selectedStyle
                                         : _changeSubscriptionOptionsStyle,
@@ -252,8 +255,16 @@ class _ChangeSubscriptionPageState extends State<ChangeSubscriptionPage> {
     if (configuration != null) {
       await Purchases.configure(configuration);
 
-      List<StoreProduct> productList = await Purchases.getProducts(
-          ["thesalesgong_${totalTeamMembers}_person_team_sub"]);
+      List<StoreProduct> productList;
+
+      if (totalTeamMembers < 20) {
+        productList = await Purchases.getProducts(
+            ["thesalesgong_${totalTeamMembers}_person_team_sub"]);
+      } else {
+        productList = await Purchases.getProducts(
+            ["thesalesgong_unlimited_person_team_sub"]);
+      }
+
       try {
         CustomerInfo paywallResult =
             await Purchases.purchaseStoreProduct(productList.first);
@@ -302,7 +313,9 @@ class _ChangeSubscriptionPageState extends State<ChangeSubscriptionPage> {
       'subscription': {
         'status': 'active',
         'total_team_members_allowed': _currentTeamSize,
-        'type': 'thesalesgong_${_currentTeamSize}_person_team_sub'
+        'type': _currentTeamSize < 20
+            ? 'thesalesgong_${_currentTeamSize}_person_team_sub'
+            : 'thesalesgong_unlimited_person_team_sub'
       }
     });
 

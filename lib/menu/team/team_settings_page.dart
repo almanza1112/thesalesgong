@@ -327,9 +327,11 @@ class _TeamPageState extends State<TeamPage> {
                         body: body);
 
                     if (response.statusCode == 201) {
+                      
                       setState(() {
                         _isDialogLoading = false;
                       });
+                      
                       Navigator.of(context).pop(); // Close the dialog
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -365,6 +367,7 @@ class _TeamPageState extends State<TeamPage> {
     );
   }
 
+  // NOT BEING USED
   void addTeamMember() {
     showDialog(
       context: context,

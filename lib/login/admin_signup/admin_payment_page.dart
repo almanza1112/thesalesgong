@@ -29,6 +29,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
+    double totalTeamMembers =
+        widget.adminSigningUp!.teamEmailAddresses!.length + 1;
     double totalPrice =
         (widget.adminSigningUp!.teamEmailAddresses!.length + 1) * 5.00;
     DateTime purchaseDate = DateTime.now();
@@ -70,9 +72,13 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildBreakdownItem('Team Members',
-                    widget.adminSigningUp!.teamEmailAddresses!.length + 1),
-                _buildBreakdownItem('Price per Email', '\$5.00'),
+                _buildBreakdownItem(
+                    'Team Members',
+                    totalTeamMembers < 20
+                        ? widget.adminSigningUp!.teamEmailAddresses!.length + 1
+                        : 'Unlimited (20+)'),
+                if (totalTeamMembers < 20)
+                  _buildBreakdownItem('Price per Email', '\$5.00'),
                 _buildBreakdownItem('Subscription Duration', '1 month'),
                 // Removing the renewal date for now
                 // TODO: add this back in the future when you find out how in-app purchases determines a month durantion for subscriptions
@@ -91,7 +97,9 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
                             fontWeight: FontWeight.w700),
                       ),
                       Text(
-                        '\$${totalPrice.toStringAsFixed(2)}',
+                        totalTeamMembers > 20
+                            ? '\$100.00'
+                            : '\$${totalPrice.toStringAsFixed(2)}',
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -165,9 +173,16 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
 
       final totalTeamMembers =
           widget.adminSigningUp!.teamEmailAddresses!.length + 1;
+      List<StoreProduct> productList;
 
-      List<StoreProduct> productList = await Purchases.getProducts(
-          ["thesalesgong_${totalTeamMembers}_person_team_sub"]);
+      if (totalTeamMembers < 20) {
+        productList = await Purchases.getProducts(
+            ["thesalesgong_${totalTeamMembers}_person_team_sub"]);
+      } else {
+        productList = await Purchases.getProducts(
+            ["thesalesgong_unlimited_person_team_sub"]);
+      }
+
       try {
         CustomerInfo paywallResult =
             await Purchases.purchaseStoreProduct(productList.first);
@@ -187,7 +202,9 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
             "team_members":
                 widget.adminSigningUp!.teamEmailAddresses!.toString(),
             "fcm_token": fcmToken,
-            "subscription_type": "thesalesgong_${totalTeamMembers}_person_team_sub",
+            "subscription_type": totalTeamMembers < 20
+                ? "thesalesgong_${totalTeamMembers}_person_team_sub"
+                : "thesalesgong_unlimited_person_team_sub",
           };
 
           http.Response response = await http.post(

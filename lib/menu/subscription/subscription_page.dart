@@ -10,7 +10,6 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
-
   TextStyle get _changeSubscriptionOptionsStyle =>
       const TextStyle(color: Colors.white, fontSize: 16);
 
@@ -90,7 +89,11 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                             ),
                             const Spacer(),
                             Text(
-                              "${data['subscription']['total_team_members_allowed']} Person Team Subscription",
+                              data['subscription']
+                                          ['total_team_members_allowed'] <
+                                      20
+                                  ? "${data['subscription']['total_team_members_allowed']} Person Team Subscription"
+                                  : "Unlimited Team Subscription",
                               style: _resultTextStyle,
                             )
                           ],
