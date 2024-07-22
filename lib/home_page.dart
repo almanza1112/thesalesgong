@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:thesalesgong/globals.dart' as globals;
 import 'package:thesalesgong/menu/team/team_settings_page.dart';
 import 'package:thesalesgong/notifications_page.dart';
@@ -64,9 +67,52 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  void _getSubscriptionStatus() async {
+    String role =
+        await storage.read(key: globals.FSS_ROLE) ?? globals.FSS_TEAM_MEMBER;
+    if (role == globals.FSS_ADMIN) {
+      print("admin");
+      try {
+        print(1);
+        CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+        print(2);
+
+        if(customerInfo.entitlements.active.values.first.isActive) {
+          print('Subscription is active');
+        } else {
+          print('Subscription is not active');
+        }
+      } on PlatformException catch (e) {
+        // Error fetching customer info
+        print("PlatformException: $e");
+      } catch (e) {
+        print("Exception: $e");
+      }
+    } else {
+      // User is not an admin
+      // Check if subscription is active from firebase
+      FirebaseFirestore.instance
+          .collection("teams")
+          .doc((await storage.read(key: globals.FSS_TEAM_ID))!)
+          .get()
+          .then((value) {
+        if (value.exists) {
+          Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+          if (data['subscription_status'] == 'active') {
+            print('Subscription is active');
+          } else {
+            print('Subscription is not active');
+          }
+        }
+      }).catchError(
+              (error) => print('Failed to get subscription status: $error'));
+    }
+  }
+
   @override
   void initState() {
     setupInteractedMessage();
+    //_getSubscriptionStatus();
     super.initState();
   }
 
@@ -296,15 +342,14 @@ class _HomePageState extends State<HomePage> {
         ListTile(
           title: const Text('Team'),
           onTap: () async {
-              String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
-              
-              if(!mounted) return;
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return TeamPage(
-                  teamId: teamID,
-                );
-              }));
-            
+            String? teamID = await storage.read(key: globals.FSS_TEAM_ID);
+
+            if (!mounted) return;
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return TeamPage(
+                teamId: teamID,
+              );
+            }));
           },
         ),
         ListTile(
