@@ -22,6 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _messageController = TextEditingController();
+  String? _messageErrorText;
   final storage = const FlutterSecureStorage();
 
   bool _isLoading = false;
@@ -77,7 +78,7 @@ class _HomePageState extends State<HomePage> {
         CustomerInfo customerInfo = await Purchases.getCustomerInfo();
         print(2);
 
-        if(customerInfo.entitlements.active.values.first.isActive) {
+        if (customerInfo.entitlements.active.values.first.isActive) {
           print('Subscription is active');
         } else {
           print('Subscription is not active');
@@ -215,6 +216,7 @@ class _HomePageState extends State<HomePage> {
                           decoration: InputDecoration(
                             hintText: 'Enter your message here',
                             hintStyle: const TextStyle(color: Colors.grey),
+                            errorText: _messageErrorText,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(40),
                               borderSide: const BorderSide(
@@ -262,6 +264,7 @@ class _HomePageState extends State<HomePage> {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
+        _messageErrorText = null;
       });
 
       var body = {
@@ -282,32 +285,43 @@ class _HomePageState extends State<HomePage> {
         _messageController.clear();
         Map<String, dynamic> data = jsonDecode(response.body);
 
-        print(data);
-
         final successMessage = data['message'];
-        if (context.mounted) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NotificationsPage(
-                        wasGongHit: true,
-                        successMessage: successMessage,
-                      )));
-        }
+        if (!mounted) return;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NotificationsPage(
+                      wasGongHit: true,
+                      successMessage: successMessage,
+                    )));
       } else if (response.statusCode == 400) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No other team members to notify'),
-          ),
-        );
-      } else {
-        if (context.mounted) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['message'] == 'User is not in the team.') {
+          setState(() {
+            _isLoading = false;
+            _messageErrorText = 'You are not part of a team';
+          });
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Failed to hit the Sales Gong'),
+              content: Text('You are not part of a team'),
+            ),
+          );
+        } else {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No other team members to notify'),
             ),
           );
         }
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to hit the Sales Gong'),
+          ),
+        );
       }
       if (context.mounted) {
         setState(() {

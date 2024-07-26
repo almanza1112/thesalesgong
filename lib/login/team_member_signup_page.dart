@@ -335,9 +335,9 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
 
             await storage.write(
                 key: globals.FSS_ROLE, value: globals.FSS_TEAM_MEMBER);
-            if (context.mounted) {
-              Navigator.pushNamed(context, '/home');
-            }
+
+            if (!mounted) return;
+            Navigator.pushNamed(context, '/home');
           });
         } on FirebaseAuthException catch (e) {
           if (e.code == 'user-not-found') {
@@ -346,7 +346,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
             print('Wrong password provided for that user.');
           }
         }
-      } else if (response.statusCode == 409 && context.mounted) {
+      } else if (response.statusCode == 409) {
         Map<String, dynamic> data = jsonDecode(response.body);
         if (data['part'] == 'creating user') {
           setState(() {
@@ -356,11 +356,23 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
           setState(() {
             _emailErrorText = 'Email does not belong to team';
           });
+        } else if (data['part'] == 'subscription status') {
+          setState(() {
+            _teamIDErrorText = 'Team subscription expired';
+          });
+        } else {
+          if(!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Server error, please try again later'),
+            ),
+          );
         }
-      } else if (response.statusCode == 500 && context.mounted) {
+      } else if (response.statusCode == 500) {
         // Error 500 = team id not found || user already has account
         Map<String, dynamic> data = jsonDecode(response.body);
         if (data['part'] == 'creating user') {
+          if(!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Error creating new user, please try again later'),
@@ -371,6 +383,7 @@ class _TeamMemberSignupPageState extends State<TeamMemberSignupPage> {
             _teamIDErrorText = 'Team ID not found';
           });
         } else {
+          if(!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Server error, please try again later'),
