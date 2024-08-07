@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:thesalesgong/globals.dart' as globals;
 
 class NotificationsPage extends StatefulWidget {
   final bool? wasGongHit;
@@ -13,21 +12,9 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   final firestore = FirebaseFirestore.instance;
-  final storage = const FlutterSecureStorage();
-  String teamId = '';
 
   Future<void> _refreshNotifications() async {
     // Add your logic to fetch data from Firestore here
-  }
-
-  @override
-  void initState() {
-    storage.read(key: globals.FSS_TEAM_ID).then((value) {
-      setState(() {
-        teamId = value!;
-      });
-    });
-    super.initState();
   }
 
   @override
@@ -50,75 +37,102 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ),
       ),
-      body: teamId.isEmpty
-          ? const Center(child: Text('No Gongs yet!'))
-          : Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    Color.fromRGBO(30, 58, 138, 1),
-                    Color.fromRGBO(79, 70, 229, 1)
-                  ],
-                ),
-              ),
-              child: Stack(
-                children: [
-                  RefreshIndicator(
-                    onRefresh: _refreshNotifications,
-                    child: FutureBuilder<DocumentSnapshot>(
-                      future: firestore.collection("teams").doc(teamId).get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        } else {
-                          final notifications = snapshot.data!.data() as Map;
-                          List gongList = notifications["gong_history"];
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color.fromRGBO(30, 58, 138, 1),
+              Color.fromRGBO(79, 70, 229, 1)
+            ],
+          ),
+        ),
+        child: FutureBuilder(
+          future: FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser?.uid)
+              .get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text('An error occurred! Please try again later', style: TextStyle(color: Colors.white, fontSize: 16)),
+              );
+            }
 
-                          // Reverse the list to show the latest notification first
-                          gongList = List.from(gongList.reversed);
-                          return ListView.builder(
-                            itemCount: gongList.length,
-                            itemBuilder: (context, index) {
-                              final notification = gongList[index];
-                              final name = notification['name'];
-                              final message = notification['message'];
-                              int timestamp =
-                                  int.parse(notification['timestamp']);
-                              return Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.grey[200],
-                                  ),
-                                  child: ListTile(
-                                    title: Text(name),
-                                    subtitle: Text(message),
-                                    leading: Text(_formatDateTime(timestamp)),
-                                  ),
+            final userData = snapshot.data!.data() as Map<String, dynamic>;
+
+            if (userData['is_in_team'] == false) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: Text('You are not in a team yet. Please ask your admin to add you to the team.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16),),
+                ),
+              );
+            }
+            return Stack(
+              children: [
+                RefreshIndicator(
+                  onRefresh: _refreshNotifications,
+                  child: FutureBuilder<DocumentSnapshot>(
+                    future: firestore
+                        .collection("teams")
+                        .doc(userData['team_ID'])
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else {
+                        final notifications = snapshot.data!.data() as Map;
+                        List gongList = notifications["gong_history"];
+
+                        // Reverse the list to show the latest notification first
+                        gongList = List.from(gongList.reversed);
+                        return ListView.builder(
+                          itemCount: gongList.length,
+                          itemBuilder: (context, index) {
+                            final notification = gongList[index];
+                            final name = notification['name'];
+                            final message = notification['message'];
+                            int timestamp =
+                                int.parse(notification['timestamp']);
+                            return Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.grey[200],
                                 ),
-                              );
-                            },
-                          );
-                        }
-                      },
-                    ),
+                                child: ListTile(
+                                  title: Text(name),
+                                  subtitle: Text(message),
+                                  leading: Text(_formatDateTime(timestamp)),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
-                  if (widget.wasGongHit!)
-                    SuccessMessageOverlay(
-                      successMessage: widget.successMessage!,
-                    ),
-                ],
-              ),
-            ),
+                ),
+                if (widget.wasGongHit!)
+                  SuccessMessageOverlay(
+                    successMessage: widget.successMessage!,
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 

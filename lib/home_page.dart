@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -78,11 +79,11 @@ class _HomePageState extends State<HomePage> {
         CustomerInfo customerInfo = await Purchases.getCustomerInfo();
         print(2);
 
-        if (customerInfo.entitlements.active.values.first.isActive) {
-          print('Subscription is active');
-        } else {
-          print('Subscription is not active');
-        }
+        if (!customerInfo.entitlements.active.values.first.isActive) {
+          // Subscription is not active
+          _updateSubscriptionStatus();
+        } 
+
       } on PlatformException catch (e) {
         // Error fetching customer info
         print("PlatformException: $e");
@@ -92,21 +93,51 @@ class _HomePageState extends State<HomePage> {
     } else {
       // User is not an admin
       // Check if subscription is active from firebase
-      FirebaseFirestore.instance
-          .collection("teams")
-          .doc((await storage.read(key: globals.FSS_TEAM_ID))!)
-          .get()
-          .then((value) {
-        if (value.exists) {
-          Map<String, dynamic> data = value.data() as Map<String, dynamic>;
-          if (data['subscription_status'] == 'active') {
-            print('Subscription is active');
-          } else {
-            print('Subscription is not active');
-          }
-        }
-      }).catchError(
-              (error) => print('Failed to get subscription status: $error'));
+      // FirebaseFirestore.instance
+      //     .collection("teams")
+      //     .doc((await storage.read(key: globals.FSS_TEAM_ID))!)
+      //     .get()
+      //     .then((value) {
+      //   if (value.exists) {
+      //     Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+      //     if (data['subscription_status'] == 'active') {
+      //       print('Subscription is active');
+      //     } else {
+      //       print('Subscription is not active');
+      //     }
+      //   }
+      // }).catchError(
+      //         (error) {
+      //           ScaffoldMessenger.of(context).showSnackBar(
+      //             const SnackBar(
+      //               content: Text('Failed to get subscription status'),
+      //             ),
+      //           );
+      //         });
+    }
+  }
+
+  void _updateSubscriptionStatus() async {
+    var body = {
+      "uid": FirebaseAuth.instance.currentUser!.uid,
+      "team_ID": await storage.read(key: globals.FSS_TEAM_ID),
+      "subscription_status": "inactive"
+    };
+
+    http.Response response = await http.post(
+        Uri.parse("${globals.END_POINT}/subscription/update_status"),
+        body: body);
+
+    if (response.statusCode == 201) {
+      // Do nothing for now
+      //Map<String, dynamic> data = jsonDecode(response.body);
+    } else {
+      if(!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to update subscription status'),
+        ),
+      );
     }
   }
 
@@ -213,6 +244,8 @@ class _HomePageState extends State<HomePage> {
                           textCapitalization: TextCapitalization.sentences,
                           style: const TextStyle(color: Colors.white),
                           cursorColor: Colors.white,
+                                              maxLines: 5,
+
                           decoration: InputDecoration(
                             hintText: 'Enter your message here',
                             hintStyle: const TextStyle(color: Colors.grey),
