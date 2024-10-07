@@ -349,6 +349,7 @@ class _HomePageState extends State<HomePage> {
           );
         }
       } else {
+        print(response.body);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

@@ -92,7 +92,9 @@ class _SupportPageState extends State<SupportPage> {
                         foregroundColor: Colors.white,
                         shape: const StadiumBorder()),
                     onPressed: _sendMessage,
-                    child: _isLoading ? const CircularProgressIndicator() : const Text("SEND MESSAGE"),
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text("SEND MESSAGE"),
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -107,10 +109,35 @@ class _SupportPageState extends State<SupportPage> {
       setState(() {
         _isLoading = true;
       });
-      FirebaseFirestore.instance.collection("user_messages").doc(FirebaseAuth.instance.currentUser!.uid).set({
-        'email': FirebaseAuth.instance.currentUser!.email,
-        'message': _messageController.text,
-        'timestamp': FieldValue.serverTimestamp(),
+
+      // Get the current user's email and timestamp
+      final userEmail = FirebaseAuth.instance.currentUser!.email;
+      DateTime now = DateTime.now();
+
+      String formattedDate = "${now.month}/${now.day}/${now.year}";
+      String formattedTime = _formatTime(now);
+
+      // Define your HTML content for the email
+      String emailContent = """
+    <h2>Support Request</h2>
+    <p><strong>From:</strong> $userEmail</p>
+    <p><strong>Date:</strong> $formattedDate</p>
+    <p><strong>Time:</strong> $formattedTime</p>    
+    <p><strong>Message:</strong></p>
+    <p>${_messageController.text}</p>
+    <hr>
+    <p>Thank you for reaching out to support!</p>
+    """;
+
+      FirebaseFirestore.instance
+          .collection("mail")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({
+        'to': 'hello@thesalesgong.com',
+        'message': {
+          'subject': 'Support Request',
+          'html': emailContent, // Use the improved HTML content
+        },
       }).then((value) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Message sent successfully'),
@@ -126,5 +153,21 @@ class _SupportPageState extends State<SupportPage> {
         });
       });
     }
+  }
+
+// Function to format the time with AM/PM
+  String _formatTime(DateTime dateTime) {
+    int hour = dateTime.hour;
+    int minute = dateTime.minute;
+    String amPm = hour >= 12 ? 'PM' : 'AM';
+
+    // Convert hour to 12-hour format
+    hour = hour % 12;
+    hour = hour == 0 ? 12 : hour; // Adjust for midnight and noon
+
+    // Add leading zero to minutes if necessary
+    String minuteStr = minute < 10 ? '0$minute' : minute.toString();
+
+    return "$hour:$minuteStr $amPm";
   }
 }
