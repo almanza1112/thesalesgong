@@ -163,6 +163,8 @@ class _AdminPaymentPageState extends State<AdminPaymentPage> {
 
     if (Platform.isAndroid) {
       // configure for Google Play Store
+      configuration =
+          PurchasesConfiguration("goog_YviRgSBzRKzcqhPFlpIaVENyfAz");
     } else if (Platform.isIOS) {
       configuration =
           PurchasesConfiguration("appl_iTxQScKUYowxqRYgHvJbUnAAgKm");
